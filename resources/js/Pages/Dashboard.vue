@@ -3,28 +3,27 @@ import { ref, onMounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
+const channels = ref([]);
 const messages = ref([]);
 const speakers = ref({});
+
 const me = 'datashaman';
 const newMessage = ref('');
 
+const addChannel = (name) => {
+}
+
 const addMessage = (content, speaker) => {
-    speaker ||= me;
-    messages.value.push({ id: messages.value.length + 1, content, speaker });
 }
 
 const sendMessage = () => {
-    addMessage(newMessage.value);
     newMessage.value = '';
 }
 
 const addSpeaker = (handle, name, language, bot=false) => {
-    speakers.value[handle] = { handle, name, language, bot };
 }
 
 onMounted(() => {
-    addSpeaker(me, 'Marlin', 'en');
-    addSpeaker('alice', 'Alice', 'af');
 });
 </script>
 

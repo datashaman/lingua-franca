@@ -17,7 +17,11 @@ class BotFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->name(),
+            'handle' => fake()->unique()->userName(),
+            'description' => fake()->sentence(),
+            'instructions' => fake()->paragraph(),
+            'properties' => [],
         ];
     }
 }

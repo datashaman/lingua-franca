@@ -6,61 +6,34 @@ use App\Models\Bot;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class BotPolicy
+class BotPolicy extends Policy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Bot $bot): bool
     {
-        //
+        return true;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Bot $bot): bool
+    public function update(User $user, Bot $bot): Response
     {
-        //
+        return $user->id === $bot->user_id
+            ? Response::allow()
+            : Response::deny('You do not own this bot.');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Bot $bot): bool
+    public function delete(User $user, Bot $bot): Response
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Bot $bot): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Bot $bot): bool
-    {
-        //
+        return $user->id === $bot->user_id
+            ? Response::allow()
+            : Response::deny('You do not own this bot.');
     }
 }

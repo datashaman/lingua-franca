@@ -6,61 +6,40 @@ use App\Models\Membership;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class MembershipPolicy
+class MembershipPolicy extends Policy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Membership $membership): bool
+    public function view(User $user, Membership $membership): Response
     {
-        //
+        if ($membership->channel?->is_private) {
+            return $user->id === $membership->member_id && $membership->member_type === 'user'
+                ? Response::allow()
+                : Response::deny('You are not a member of this channel.');
+        }
+
+        return Response::allow();
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Membership $membership): bool
+    public function update(User $user, Membership $membership): Response
     {
-        //
+        return $user->id === $membership->member_id && $membership->member_type === 'user'
+            ? Response::allow()
+            : Response::deny('You are not a member of this channel.');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Membership $membership): bool
+    public function delete(User $user, Membership $membership): Response
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Membership $membership): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Membership $membership): bool
-    {
-        //
+        return $user->id === $membership->member_id && $membership->member_type === 'user'
+            ? Response::allow()
+            : Response::deny('You are not a member of this channel.');
     }
 }

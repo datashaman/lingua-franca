@@ -12,6 +12,10 @@ class Bot extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'properties' => 'array',
+    ];
+
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);

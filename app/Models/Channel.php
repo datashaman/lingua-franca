@@ -9,6 +9,10 @@ class Channel extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'is_private' => 'boolean'
+    ];
+
     public function messages()
     {
         return $this->hasMany(Message::class);
