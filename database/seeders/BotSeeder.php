@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Bot;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,8 @@ class BotSeeder extends Seeder
      */
     public function run(): void
     {
-        Bot::factory()->count(10)->create();
+        User::all()->each(
+            fn ($user) => Bot::factory()->count(3)->for($user)->create()
+        );
     }
 }

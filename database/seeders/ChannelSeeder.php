@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Channel;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,8 @@ class ChannelSeeder extends Seeder
      */
     public function run(): void
     {
-        Channel::factory()->count(10)->create();
+        User::all()->each(
+            fn ($user) => Channel::factory()->count(5)->for($user)->create()
+        );
     }
 }
