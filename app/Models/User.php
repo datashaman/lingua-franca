@@ -5,11 +5,15 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -51,32 +55,44 @@ class User extends Authenticatable
 
     public function bots()
     {
-        return $this->hasMany(Bot::class);
+        return $this
+            ->hasMany(Bot::class)
+            ->orderBy('name');
     }
 
     public function channels()
     {
-        return $this->hasMany(Channel::class);
+        return $this
+            ->hasMany(Channel::class)
+            ->orderBy('name');
     }
 
     public function sentMessages(): MorphMany
     {
-        return $this->morphMany(Message::class, 'sender');
+        return $this
+            ->morphMany(Message::class, 'sender')
+            ->latest();
+
     }
 
     public function receivedMessages(): MorphMany
     {
-        return $this->morphMany(Message::class, 'receiver');
+        return $this
+            ->morphMany(Message::class, 'receiver')
+            ->latest();
     }
 
     public function memberships()
     {
-        return $this->morphMany(Membership::class, 'member');
+        return $this
+            ->morphMany(Membership::class, 'member')
+            ->latest();
     }
 
     public function joinedChannels(): HasManyThrough
     {
         return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
-            ->where('member_type', 'user');
+                    ->where('member_type', 'user')
+                    ->orderBy('name');
     }
 }

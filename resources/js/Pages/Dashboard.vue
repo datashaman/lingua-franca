@@ -1,29 +1,34 @@
 <script setup>
-import { ref, onMounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
+
+const currentChannel = ref(null);
 
 const channels = ref([]);
 const messages = ref([]);
-const speakers = ref({});
+const members = ref({});
 
 const me = 'datashaman';
 const newMessage = ref('');
 
-const addChannel = (name) => {
-}
-
-const addMessage = (content, speaker) => {
+const newChannel = (name) => {
 }
 
 const sendMessage = () => {
     newMessage.value = '';
 }
 
-const addSpeaker = (handle, name, language, bot=false) => {
+const fetchChannels = () => {
+    axios.get('/api/channels')
+        .then(response => {
+            console.log(response.data);
+            channels.value = response.data;
+        });
 }
 
 onMounted(() => {
+    fetchChannels();
 });
 </script>
 
@@ -32,12 +37,27 @@ onMounted(() => {
 
     <AuthenticatedLayout>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 m-8 flex flex-row gap-4">
+            <div class="card bg-base-100">
+                <div class="card-body">
+                    <div class="card-title">Channels</div>
+                    <ul class="menu bg-base-200 rounded-box">
+                        <li v-for="channel in channels" :key="channel.id">
+                            <a href="#">
+                                {{ channel.name }}
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-primary" @click="newChannel">New Channel</button>
+                    </div>
+                </div>
+            </div>
             <div class="flex-grow card bg-base-100">
                 <div class="card-body">
                     <div class="card-title">Messages</div>
 
                     <div v-for="message in messages" :key="message.id">
-                        <div v-if="message.speaker === me" class="chat chat-end">
+                        <div v-if="message.member === me" class="chat chat-end">
                             <div class="chat-header">
                                 {{ me }}
                             </div>
@@ -47,7 +67,7 @@ onMounted(() => {
                         </div>
                         <div v-else class="chat chat-start">
                             <div class="chat-header">
-                                {{ message.speaker }}
+                                {{ message.member }}
                             </div>
                             <div class="chat-bubble chat-bubble-accent">
                                 {{ message.content }}
@@ -62,13 +82,13 @@ onMounted(() => {
             </div>
             <div class="card bg-base-100">
                 <div class="card-body">
-                    <div class="card-title">Speakers</div>
+                    <div class="card-title">Members</div>
 
                     <ul>
-                        <li v-for="speaker in speakers" :key="speaker.handle">
-                            <div v-if="speaker.handle === me" class="badge badge-primary text-lg">{{ speaker.handle }}</div>
-                            <div v-else class="badge badge-accent text-lg">{{ speaker.handle }}</div>
-                            ({{ speaker.language }})
+                        <li v-for="member in members" :key="member.handle">
+                            <div v-if="member.handle === me" class="badge badge-primary text-lg">{{ member.handle }}</div>
+                            <div v-else class="badge badge-accent text-lg">{{ member.handle }}</div>
+                            ({{ member.language }})
                         </li>
                     </ul>
                 </div>

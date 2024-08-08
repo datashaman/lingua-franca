@@ -18,7 +18,9 @@ class Bot extends Model
 
     public function messages(): HasMany
     {
-        return $this->hasMany(Message::class);
+        return $this
+            ->hasMany(Message::class)
+            ->latest();
     }
 
     public function user(): BelongsTo
@@ -28,12 +30,15 @@ class Bot extends Model
 
     public function memberships(): MorphMany
     {
-        return $this->morphMany(Membership::class, 'member');
+        return $this
+            ->morphMany(Membership::class, 'member')
+            ->latest();
     }
 
     public function joinedChannels(): HasManyThrough
     {
         return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
-            ->where('member_type', 'bot');
+                    ->where('member_type', 'bot')
+                    ->orderBy('name');
     }
 }

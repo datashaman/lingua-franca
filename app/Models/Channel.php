@@ -15,7 +15,9 @@ class Channel extends Model
 
     public function messages()
     {
-        return $this->hasMany(Message::class);
+        return $this
+            ->hasMany(Message::class)
+            ->oldest();
     }
 
     public function user()
@@ -25,6 +27,9 @@ class Channel extends Model
 
     public function memberships()
     {
-        return $this->morphMany(Membership::class, 'member');
+        return $this
+            ->morphMany(Membership::class, 'member')
+            ->latest();
+
     }
 }

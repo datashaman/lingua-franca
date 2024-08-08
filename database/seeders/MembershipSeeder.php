@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Bot;
 use App\Models\Channel;
 use App\Models\Membership;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,8 +18,9 @@ class MembershipSeeder extends Seeder
     {
         User::all()->each(
             fn ($user) => Channel::all()->each(
-                fn ($channel) => Membership::factory()->create([
-                    'user_id' => $user->id,
+                fn ($channel) => Membership::create([
+                    'member_id' => $user->id,
+                    'member_type' => 'user',
                     'channel_id' => $channel->id,
                 ])
             )
@@ -26,8 +28,9 @@ class MembershipSeeder extends Seeder
 
         Bot::all()->each(
             fn ($bot) => Channel::all()->each(
-                fn ($channel) => Membership::factory()->create([
-                    'user_id' => $bot->id,
+                fn ($channel) => Membership::create([
+                    'member_id' => $bot->id,
+                    'member_type' => 'bot',
                     'channel_id' => $channel->id,
                 ])
             )
