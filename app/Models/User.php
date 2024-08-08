@@ -44,4 +44,29 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function bots()
+    {
+        return $this->hasMany(Bot::class);
+    }
+
+    public function channels()
+    {
+        return $this->hasMany(Channel::class);
+    }
+
+    public function sentMessages(): MorphMany
+    {
+        return $this->morphMany(Message::class, 'sender');
+    }
+
+    public function receivedMessages(): MorphMany
+    {
+        return $this->morphMany(Message::class, 'receiver');
+    }
+
+    public function memberships()
+    {
+        return $this->morphMany(Membership::class, 'member');
+    }
 }
