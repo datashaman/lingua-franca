@@ -26,4 +26,10 @@ class Bot extends Model
     {
         return $this->morphMany(Membership::class, 'member');
     }
+
+    public function joinedChannels(): HasManyThrough
+    {
+        return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
+            ->where('member_type', 'bot');
+    }
 }
