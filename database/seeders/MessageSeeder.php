@@ -16,7 +16,8 @@ class MessageSeeder extends Seeder
     {
         Channel::all()->each(
             fn ($channel) => Message::factory()->count(10)->create([
-                'channel_id' => $channel->id,
+                'receiver_id' => $channel->id,
+                'receiver_type' => 'channel',
             ])
         );
     }

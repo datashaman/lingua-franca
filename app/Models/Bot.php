@@ -16,11 +16,14 @@ class Bot extends Model
         'properties' => 'array',
     ];
 
-    public function messages(): HasMany
+    public function receivedMessages(): MorphMany
     {
-        return $this
-            ->hasMany(Message::class)
-            ->latest();
+        return $this->morphMany(Message::class, 'receiver');
+    }
+
+    public function sentMessages(): MorphMany
+    {
+        return $this->morphMany(Message::class, 'sender');
     }
 
     public function user(): BelongsTo
@@ -35,10 +38,17 @@ class Bot extends Model
             ->latest();
     }
 
+    public function ownedChannels(): MorphMany
+    {
+        return $this
+            ->morphMany(Channel::class, 'owner')
+            ->orderBy('name');
+    }
+
     public function joinedChannels(): HasManyThrough
     {
         return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
-                    ->where('member_type', 'bot')
+                    ->where('member_type', 'user')
                     ->orderBy('name');
     }
 }

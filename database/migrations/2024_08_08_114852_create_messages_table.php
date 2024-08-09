@@ -13,12 +13,6 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('channel_id')
-                  ->index()
-                  ->nullable()
-                  ->constrained()
-                  ->cascadeOnDelete()
-                  ->cascadeOnUpdate();
             $table->morphs('sender');
             $table->string('receiver_type')->nullable();
             $table->unsignedBigInteger('receiver_id')->nullable();

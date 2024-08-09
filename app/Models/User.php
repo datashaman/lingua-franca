@@ -60,10 +60,24 @@ class User extends Authenticatable
             ->orderBy('name');
     }
 
-    public function channels()
+    public function memberships()
     {
         return $this
-            ->hasMany(Channel::class)
+            ->morphMany(Membership::class, 'member')
+            ->latest();
+    }
+
+    public function joinedChannels(): HasManyThrough
+    {
+        return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
+                    ->where('member_type', 'user')
+                    ->orderBy('name');
+    }
+
+    public function ownedChannels(): MorphMany
+    {
+        return $this
+            ->morphMany(Channel::class, 'owner')
             ->orderBy('name');
     }
 
@@ -80,19 +94,5 @@ class User extends Authenticatable
         return $this
             ->morphMany(Message::class, 'receiver')
             ->latest();
-    }
-
-    public function memberships()
-    {
-        return $this
-            ->morphMany(Membership::class, 'member')
-            ->latest();
-    }
-
-    public function joinedChannels(): HasManyThrough
-    {
-        return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
-                    ->where('member_type', 'user')
-                    ->orderBy('name');
     }
 }

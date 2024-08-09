@@ -20,9 +20,4 @@ class Message extends Model
     {
         return $this->morphTo();
     }
-
-    public function channel(): BelongsTo
-    {
-        return $this->belongsTo(Channel::class);
-    }
 }

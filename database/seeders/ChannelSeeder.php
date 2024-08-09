@@ -15,7 +15,7 @@ class ChannelSeeder extends Seeder
     public function run(): void
     {
         User::all()->each(
-            fn ($user) => Channel::factory()->count(5)->for($user)->create()
+            fn ($user) => Channel::factory()->count(5)->for($user, 'owner')->create()
         );
     }
 }

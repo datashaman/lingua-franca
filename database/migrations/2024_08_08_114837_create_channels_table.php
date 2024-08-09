@@ -19,11 +19,7 @@ return new class extends Migration
             $table->string('color')->nullable();
             $table->string('icon')->nullable();
             $table->boolean('is_private')->default(false);
-            $table->foreignId('user_id')
-                  ->index()
-                  ->constrained()
-                  ->cascadeOnDelete()
-                  ->cascadeOnUpdate();
+            $table->morphs('owner');
             $table->timestamps();
         });
     }
