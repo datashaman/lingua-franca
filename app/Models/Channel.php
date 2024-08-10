@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Notifications\Notifiable;
@@ -18,7 +17,7 @@ class Channel extends Model
     use Notifiable;
 
     protected $casts = [
-        'is_public' => 'boolean'
+        'is_public' => 'boolean',
     ];
 
     protected $fillable = [
@@ -34,11 +33,11 @@ class Channel extends Model
     protected static function booted()
     {
         static::creating(function (Channel $channel) {
-            if (!$channel->slug) {
+            if (! $channel->slug) {
                 $channel->slug = Str::slug($channel->name);
             }
 
-            if (!$channel->owner_id) {
+            if (! $channel->owner_id) {
                 $channel->owner_id = auth()->id();
                 $channel->owner_type = 'user';
             }

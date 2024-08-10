@@ -8,9 +8,6 @@ use Inertia\Inertia;
 
 class ChannelController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(Request $request, Channel $channel)
     {
         return Inertia::render('ChannelPage', [

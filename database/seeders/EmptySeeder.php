@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Bot;
 use App\Models\Channel;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -28,8 +27,17 @@ class EmptySeeder extends Seeder
         $bot = $user->bots()->create([
             'handle' => 'bot',
             'name' => 'Bot',
-            'description' => '',
+            'description' => 'An Afrikaans bot.',
             'instructions' => '',
+            'locale' => 'af',
+        ]);
+
+        $otherUser = User::factory()->create([
+            'email' => 'other@example.com',
+            'handle' => 'other',
+            'locale' => 'de',
+            'name' => 'Other User',
+            'password' => Hash::make('password'),
         ]);
 
         $this->call([

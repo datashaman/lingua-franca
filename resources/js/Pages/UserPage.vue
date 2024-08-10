@@ -7,49 +7,37 @@ import { PlusIcon } from '@heroicons/vue/24/solid';
 const page = usePage();
 
 const props = defineProps({
-    channel: Object,
-    members: Array,
+    user: Object,
     messages: Array,
 });
 
-const members = ref(props.members);
 const messages = ref(props.messages);
 const newMessage = ref('');
 
 const sendMessage = () => {
-    axios.post(`/api/channels/${props.channel.slug}/messages`, {
+    axios.post(`/api/users/${props.user.slug}/messages`, {
         content: newMessage.value,
     });
     newMessage.value = '';
 }
 
 const fetchMessages = () => {
-    axios.get(`/api/channels/${props.channel.slug}/messages`)
+    axios.get(`/api/users/${props.user.slug}/messages`)
         .then(response => {
             messages.value = response.data;
         });
 }
 
-const fetchMembers = () => {
-    axios.get(`/api/channels/${props.channel.slug}/members`)
-        .then(response => {
-            members.value = response.data;
-        });
-}
-
-const newMember = () => {
-}
-
-Echo.private(`App.Models.Channel.${props.channel.id}`)
+Echo.private(`App.Models.User.${props.user.id}`)
     .listen('MessageSent', (event) => {
         messages.value.push(event.message);
     });
 </script>
 
 <template>
-    <AppLayout title="Channel">
+    <AppLayout title="User">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ channel.name }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ user.name }}</h2>
         </template>
 
         <div class="sm:px-6 flex flex-row gap-4">

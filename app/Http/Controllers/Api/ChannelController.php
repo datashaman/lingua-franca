@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
 use App\Models\Channel;
-use App\Models\User;
-use App\Notifications\ChannelJoined;
-use App\Notifications\ChannelMessageSent;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -92,7 +90,7 @@ class ChannelController extends Controller implements HasMiddleware
         $message->sender()->associate($authUser);
         $message->save();
 
-        $channel->notifyNow(new ChannelMessageSent($message));
+        MessageSent::dispatch($message);
 
         return response()->noContent();
     }

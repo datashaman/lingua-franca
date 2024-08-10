@@ -6,7 +6,6 @@ use App\Models\Bot;
 use App\Models\Channel;
 use App\Models\Membership;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MembershipSeeder extends Seeder

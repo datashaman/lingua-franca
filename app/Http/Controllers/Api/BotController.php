@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBotRequest;
 use App\Http\Requests\UpdateBotRequest;
 use App\Models\Bot;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
 class BotController extends Controller
@@ -21,6 +21,7 @@ class BotController extends Controller
             new Middleware('can:create,App\Models\Bot', only: ['store']),
             new Middleware('can:update,bot', only: ['update']),
             new Middleware('can:delete,bot', only: ['destroy']),
+            new Middleware('can:send-message,bot', only: ['sendMessage']),
         ];
     }
 
@@ -56,6 +57,24 @@ class BotController extends Controller
     public function destroy(Bot $bot)
     {
         $bot->delete();
+
+        return response()->noContent();
+    }
+
+    public function sendMessage(Request $request, Bot $bot)
+    {
+        $authUser = $request->user();
+
+        $message = $bot->receivedMessages()->make([
+            'content' => $request->input('content'),
+        ]);
+
+        $message->sender_type = $authUser->getMorphClass();
+        $message->sender_id = $authUser->getKey();
+
+        $message->save();
+
+        MessageSent::dispatch($message);
 
         return response()->noContent();
     }

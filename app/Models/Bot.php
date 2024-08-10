@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Bot extends Model
 {
@@ -56,8 +55,8 @@ class Bot extends Model
     public function joinedChannels(): HasManyThrough
     {
         return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
-                    ->where('member_type', 'user')
-                    ->orderBy('name');
+            ->where('member_type', 'user')
+            ->orderBy('name');
     }
 
     public function getRouteKeyName(): string

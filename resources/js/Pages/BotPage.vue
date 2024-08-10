@@ -7,49 +7,37 @@ import { PlusIcon } from '@heroicons/vue/24/solid';
 const page = usePage();
 
 const props = defineProps({
-    channel: Object,
-    members: Array,
+    bot: Object,
     messages: Array,
 });
 
-const members = ref(props.members);
 const messages = ref(props.messages);
 const newMessage = ref('');
 
 const sendMessage = () => {
-    axios.post(`/api/channels/${props.channel.slug}/messages`, {
+    axios.post(`/api/bots/${props.bot.handle}/messages`, {
         content: newMessage.value,
     });
     newMessage.value = '';
 }
 
 const fetchMessages = () => {
-    axios.get(`/api/channels/${props.channel.slug}/messages`)
+    axios.get(`/api/bots/${props.bot.handle}/messages`)
         .then(response => {
             messages.value = response.data;
         });
 }
 
-const fetchMembers = () => {
-    axios.get(`/api/channels/${props.channel.slug}/members`)
-        .then(response => {
-            members.value = response.data;
-        });
-}
-
-const newMember = () => {
-}
-
-Echo.private(`App.Models.Channel.${props.channel.id}`)
+Echo.private(`App.Models.Bot.${props.bot.id}`)
     .listen('MessageSent', (event) => {
         messages.value.push(event.message);
     });
 </script>
 
 <template>
-    <AppLayout title="Channel">
+    <AppLayout title="Bot">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ channel.name }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ bot.name }}</h2>
         </template>
 
         <div class="sm:px-6 flex flex-row gap-4">
@@ -82,25 +70,6 @@ Echo.private(`App.Models.Channel.${props.channel.id}`)
                     </div>
                 </div>
             </div>
-            <ul class="menu bg-base-200 rounded-box">
-                <ul>
-                    <li v-for="member in members" :key="member.handle" class="flex flex-row">
-                        <div class="flex-grow">{{ member.handle }}</div>
-                        <div><div class="badge badge-accent">{{ member.locale }}</div></div>
-                        <div class="text-green-500">&#9679;</div>
-                    </li>
-                </ul>
-            </ul>
         </div>
-        <dialog id="new_member" class="modal modal-bottom sm:modal-middle">
-            <div class="modal-box">
-                <h3 class="text-lg font-bold">New Member</h3>
-                <div class="modal-action">
-                    <form method="dialog">
-                        <button class="btn">Close</button>
-                    </form>
-                </div>
-            </div>
-        </dialog>
     </AppLayout>
 </template>

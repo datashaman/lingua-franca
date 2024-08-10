@@ -15,26 +15,9 @@ const authUser = computed(() => page.props.auth.user);
 const bots = ref(props.bots);
 const users = ref(props.users);
 
-const fetchUsers = () => {
-    axios.get('/api/users')
-        .then(response => {
-            users.value = response.data;
-        });
-}
-
-const fetchBots = () => {
-    axios.get('/api/bots')
-        .then(response => {
-            bots.value = response.data;
-        });
-}
-
 const localeName = (locale) => {
     return page.props.locales[locale];
 }
-
-onMounted(() => {
-});
 </script>
 
 <template>
@@ -53,8 +36,10 @@ onMounted(() => {
                 </li>
                 <ul>
                     <li v-for="user in users" :key="user.handle">
-                        <span v-if="authUser && user.id === authUser.id" class="font-bold">{{ user.handle }} <span class="badge badge-accent badge-sm">{{ localeName(user.locale) }}</span></span>
-                        <span v-else>{{ user.handle }} <span class="badge badge-accent badge-sm">{{ localeName(user.locale) }}</span></span>
+                        <Link :href="user.handle === page.props.auth.user?.handle ? '#' : route('users.show', user.handle)">
+                            <span v-if="authUser && user.id === authUser.id" class="font-bold">{{ user.handle }} <span class="badge badge-accent badge-sm">{{ localeName(user.locale) }}</span></span>
+                            <span v-else>{{ user.handle }} <span class="badge badge-accent badge-sm">{{ localeName(user.locale) }}</span></span>
+                        </Link>
                     </li>
                 </ul>
             </ul>
@@ -69,7 +54,9 @@ onMounted(() => {
                 </li>
                 <ul>
                     <li v-for="bot in bots" :key="bot.handle">
-                        <span>{{ bot.handle }} <span class="badge badge-accent badge-sm">{{ localeName(bot.locale) }}</span></span>
+                        <Link :href="route('bots.show', bot.handle)">
+                            <span>{{ bot.handle }} <span class="badge badge-accent badge-sm">{{ localeName(bot.locale) }}</span></span>
+                        </Link>
                     </li>
                 </ul>
             </ul>
