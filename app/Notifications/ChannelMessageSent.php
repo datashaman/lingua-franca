@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Message;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -13,8 +14,7 @@ class ChannelMessageSent extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        protected Model $sender,
-        protected string $content
+        protected Message $message
     ) {
     }
 
@@ -47,11 +47,13 @@ class ChannelMessageSent extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'id' => $this->message->id,
             'sender' => [
-                'type' => $this->sender->getMorphClass(),
-                'handle' => $this->sender->handle,
+                'id' => $this->message->sender->id,
+                'type' => $this->message->sender->getMorphClass(),
+                'handle' => $this->message->sender->handle,
             ],
-            'content' => $this->content,
+            'content' => $this->message->content,
         ];
     }
 

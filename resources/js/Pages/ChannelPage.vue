@@ -43,7 +43,11 @@ const newMember = () => {
 onMounted(() => {
     Echo.private(`App.Models.Channel.${props.channel.id}`)
         .notification((notification) => {
-            console.log(notification);
+            switch (notification.type) {
+                case 'App\\Notifications\\ChannelMessageSent':
+                    messages.value.push(notification)
+                    break;
+            }
         });
 });
 
@@ -62,7 +66,7 @@ onMounted(() => {
                         <div>Messages</div>
                     </div>
                     <div v-for="message in messages" :key="message.id">
-                        <div v-if="message.sender_type === 'user' && message.sender_id === page.props.auth.user.id" class="chat chat-end">
+                        <div v-if="message.sender.type === 'user' && message.sender.id === page.props.auth.user.id" class="chat chat-end">
                             <div class="chat-header">
                                 {{ message.sender.handle }}
                             </div>
@@ -72,7 +76,7 @@ onMounted(() => {
                         </div>
                         <div v-else class="chat chat-start">
                             <div class="chat-header">
-                                {{ message.member }}
+                                {{ message.sender.handle }}
                             </div>
                             <div class="chat-bubble chat-bubble-accent">
                                 {{ message.content }}

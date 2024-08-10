@@ -50,6 +50,11 @@ class Channel extends Model
         return $this->morphTo();
     }
 
+    public function messages(): MorphMany
+    {
+        return $this->morphMany(Message::class, 'receiver');
+    }
+
     public function memberships(): HasMany
     {
         return $this

@@ -13,13 +13,10 @@ class ChannelController extends Controller
      */
     public function __invoke(Request $request, Channel $channel)
     {
-        $messages = $channel->notifications;
-        dump($messages);
-
         return Inertia::render('ChannelPage', [
             'channel' => $channel,
             'members' => $channel->members,
-            'messages' => $channel->notifications,
+            'messages' => $channel->messages,
         ]);
     }
 }

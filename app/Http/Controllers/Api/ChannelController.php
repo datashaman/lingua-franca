@@ -85,10 +85,14 @@ class ChannelController extends Controller implements HasMiddleware
     {
         $authUser = $request->user();
 
-        $channel->notifyNow(new ChannelMessageSent(
-            $authUser,
-            $request->content
-        ));
+        $message = $channel->messages()->make([
+            'content' => $request->content,
+        ]);
+
+        $message->sender()->associate($authUser);
+        $message->save();
+
+        $channel->notifyNow(new ChannelMessageSent($message));
 
         return response()->noContent();
     }
