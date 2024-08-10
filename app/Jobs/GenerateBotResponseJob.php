@@ -42,7 +42,10 @@ class GenerateBotResponseJob implements ShouldQueue
 
         $messages = match ($receiverType) {
             'channel' => $receiver->messages,
-            'bot', 'user' => Message::query()->between($this->bot, $receiver)->get(),
+            'bot', 'user' => Message::query()
+                ->between($this->bot, $receiver)
+                ->oldest()
+                ->get(),
         };
 
         if ($messages->isEmpty()) {

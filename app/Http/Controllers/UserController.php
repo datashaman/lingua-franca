@@ -13,7 +13,10 @@ class UserController extends Controller
         return Inertia::render('UserPage', [
             'user' => $user,
             'messages' => $request->user()
-                ? Message::query()->between($request->user(), $user)->get()
+                ? Message::query()
+                    ->between($request->user(), $user)
+                    ->oldest()
+                    ->get()
                 : [],
         ]);
     }

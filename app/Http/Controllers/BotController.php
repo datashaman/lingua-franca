@@ -14,7 +14,10 @@ class BotController extends Controller
         return Inertia::render('BotPage', [
             'bot' => $bot,
             'messages' => $request->user()
-                ? Message::query()->between($request->user(), $bot)->get()
+                ? Message::query()
+                    ->between($request->user(), $bot)
+                    ->oldest()
+                    ->get()
                 : [],
         ]);
     }

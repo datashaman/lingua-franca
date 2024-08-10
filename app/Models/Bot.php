@@ -25,12 +25,16 @@ class Bot extends Model
 
     public function receivedMessages(): MorphMany
     {
-        return $this->morphMany(Message::class, 'receiver');
+        return $this
+            ->morphMany(Message::class, 'receiver')
+            ->oldest();
     }
 
     public function sentMessages(): MorphMany
     {
-        return $this->morphMany(Message::class, 'sender');
+        return $this
+            ->morphMany(Message::class, 'sender')
+            ->oldest();
     }
 
     public function user(): BelongsTo
