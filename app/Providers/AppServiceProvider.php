@@ -23,7 +23,6 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'bot' => 'App\Models\Bot',
             'channel' => 'App\Models\Channel',
-            'message' => 'App\Models\Message',
             'user' => 'App\Models\User',
         ]);
     }

@@ -7,14 +7,14 @@ use Illuminate\Auth\Access\Response;
 
 class UserPolicy extends Policy
 {
-    public function viewAny(User $user): bool
+    public function viewAny(null|User $user): bool
     {
         return true;
     }
 
-    public function view(User $user, User $model): bool
+    public function view(null|User $user, User $model): bool
     {
-        return true;
+        return $model->is_public || $user?->id === $model->id;
     }
 
     public function create(User $user): bool

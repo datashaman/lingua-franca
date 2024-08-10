@@ -3,9 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -21,8 +23,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
+        'handle',
+        'locale',
+        'name',
         'password',
     ];
 
@@ -36,10 +40,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $casts = [
-        'is_admin' => 'boolean',
-    ];
-
     /**
      * Get the attributes that should be cast.
      *
@@ -49,6 +49,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'is_admin' => 'boolean',
+            'is_public' => 'boolean',
             'password' => 'hashed',
         ];
     }
@@ -94,5 +96,25 @@ class User extends Authenticatable
         return $this
             ->morphMany(Message::class, 'receiver')
             ->latest();
+    }
+
+    public function getUnreadChannelMessageCount(Channel $channel)
+    {
+        return $channel
+            ->messages()
+            ->unreadBy($this)
+            ->count();
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'handle';
+    }
+
+    public function joinChannel(Channel $channel): Membership
+    {
+        return $this->memberships()->create([
+            'channel_id' => $channel->id,
+        ]);
     }
 }

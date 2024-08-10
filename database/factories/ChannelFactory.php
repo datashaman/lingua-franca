@@ -20,11 +20,11 @@ class ChannelFactory extends Factory
         $name = fake()->name();
 
         return [
-            'name' => $name,
-            'slug' => Str::slug($name),
             'description' => fake()->sentence(),
             'color' => fake()->hexColor(),
-            'is_private' => fake()->boolean(),
+            'is_public' => fake()->boolean(),
+            'name' => $name,
+            'slug' => Str::slug($name),
         ];
     }
 }

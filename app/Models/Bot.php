@@ -13,7 +13,15 @@ class Bot extends Model
     use HasFactory;
 
     protected $casts = [
+        'is_public' => 'boolean',
         'properties' => 'array',
+    ];
+
+    protected $fillable = [
+        'description',
+        'locale',
+        'instructions',
+        'name',
     ];
 
     public function receivedMessages(): MorphMany
@@ -50,5 +58,17 @@ class Bot extends Model
         return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
                     ->where('member_type', 'user')
                     ->orderBy('name');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'handle';
+    }
+
+    public function joinChannel(Channel $channel): Membership
+    {
+        return $this->memberships()->create([
+            'channel_id' => $channel->id,
+        ]);
     }
 }

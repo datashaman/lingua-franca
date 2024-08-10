@@ -13,16 +13,17 @@ return new class extends Migration
     {
         Schema::create('bots', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('handle')->unique();
-            $table->text('description')->nullable();
-            $table->text('instructions')->nullable();
-            $table->json('properties')->nullable();
             $table->foreignId('user_id')
                   ->index()
                   ->constrained()
                   ->cascadeOnDelete()
                   ->cascadeOnUpdate();
+            $table->string('name');
+            $table->string('handle')->unique();
+            $table->boolean('is_public')->default(false);
+            $table->text('description')->nullable();
+            $table->text('instructions')->nullable();
+            $table->json('properties')->nullable();
             $table->timestamps();
         });
     }

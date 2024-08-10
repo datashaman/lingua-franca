@@ -1,11 +1,19 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, defineProps } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import ChannelMenu from '@/Components/ChannelMenu.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+
+const props = defineProps({
+    constrain: Boolean,
+    title: String,
+});
+
+const page = usePage();
 
 const showingNavigationDropdown = ref(false);
 
@@ -20,11 +28,11 @@ const logout = () => {
     <div class="min-h-screen bg-base-200">
         <div class="navbar bg-base-100">
             <div class="flex-1">
-                <a :href="route('dashboard')" class="btn btn-ghost text-xl">
-                    Dashboard
+                <a :href="route('home')" class="btn btn-ghost text-xl">
+                    Home
                 </a>
             </div>
-            <div class="flex-none">
+            <div v-if="page.props.auth.user" class="flex-none">
                 <ul class="menu menu-horizontal px-1">
                     <li>
                         <details>
@@ -41,6 +49,11 @@ const logout = () => {
                     </li>
                 </ul>
             </div>
+            <div v-else class="flex-none">
+                <Link :href="route('login')" class="btn btn-ghost">
+                    Login
+                </Link>
+            </div>
         </div>
 
         <!-- Page Heading -->
@@ -51,8 +64,19 @@ const logout = () => {
         </header>
 
         <!-- Page Content -->
-        <main class="h-full">
-            <slot />
+        <main class="h-full flex flex-row gap-4">
+            <div class="py-8">
+                <ChannelMenu />
+            </div>
+            <div class="flex-grow">
+                <div v-if="props.constrain" class="w-1/3 mx-auto py-8">
+                    <h1 class="text-3xl mb-8 font-bold">{{ props.title }}</h1>
+                    <slot />
+                </div>
+                <div v-else class="py-8">
+                    <slot />
+                </div>
+            </div>
         </main>
     </div>
 </template>

@@ -8,19 +8,19 @@ use Illuminate\Auth\Access\Response;
 
 class BotPolicy extends Policy
 {
-    public function viewAny(User $user): bool
+    public function viewAny(null|User $user): bool
     {
         return true;
     }
 
-    public function view(User $user, Bot $bot): bool
+    public function view(null|User $user, Bot $bot): bool
     {
         return true;
     }
 
-    public function create(User $user): bool
+    public function create(null|User $user): bool
     {
-        return true;
+        return (bool) $user;
     }
 
     public function update(User $user, Bot $bot): Response

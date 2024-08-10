@@ -18,7 +18,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('color')->nullable();
             $table->string('icon')->nullable();
-            $table->boolean('is_private')->default(false);
+            $table->boolean('is_public')->default(true);
+            $table->boolean('is_system')->default(false);
+            $table->tinyInteger('position')->nullable();
             $table->morphs('owner');
             $table->timestamps();
         });

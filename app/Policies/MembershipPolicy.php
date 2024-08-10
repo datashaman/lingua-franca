@@ -15,13 +15,13 @@ class MembershipPolicy extends Policy
 
     public function view(User $user, Membership $membership): Response
     {
-        if ($membership->channel?->is_private) {
-            return $user->id === $membership->member_id && $membership->member_type === 'user'
-                ? Response::allow()
-                : Response::deny('You are not a member of this channel.');
+        if ($membership->channel->is_public) {
+            return Response::allow();
         }
 
-        return Response::allow();
+        return $user->id === $membership->member_id && $membership->member_type === 'user'
+            ? Response::allow()
+            : Response::deny('You are not a member of this channel.');
     }
 
     public function create(User $user): bool
