@@ -271,12 +271,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/datashaman/laravel-translators.git",
-                "reference": "b1cb539ae8cb5bcfd66cd46ea484c6794559073c"
+                "reference": "38024a4f34c5ee90680195cbaa64409751ce6a7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/datashaman/laravel-translators/zipball/b1cb539ae8cb5bcfd66cd46ea484c6794559073c",
-                "reference": "b1cb539ae8cb5bcfd66cd46ea484c6794559073c",
+                "url": "https://api.github.com/repos/datashaman/laravel-translators/zipball/38024a4f34c5ee90680195cbaa64409751ce6a7a",
+                "reference": "38024a4f34c5ee90680195cbaa64409751ce6a7a",
                 "shasum": ""
             },
             "require": {
@@ -385,7 +385,7 @@
                     "url": "https://github.com/datashaman"
                 }
             ],
-            "time": "2024-08-17T10:50:03+00:00"
+            "time": "2024-08-17T11:22:57+00:00"
         },
         {
             "name": "deeplcom/deepl-php",
