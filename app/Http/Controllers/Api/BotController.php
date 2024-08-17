@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBotRequest;
 use App\Http\Requests\UpdateBotRequest;
 use App\Models\Bot;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -59,6 +60,16 @@ class BotController extends Controller
         $bot->delete();
 
         return response()->noContent();
+    }
+
+    public function messages(Request $request, Bot $bot)
+    {
+        $authUser = $request->user();
+
+        return Message::query()
+            ->between($authUser, $bot)
+            ->oldest()
+            ->get();
     }
 
     public function sendMessage(Request $request, Bot $bot)

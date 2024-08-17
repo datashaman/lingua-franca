@@ -15,9 +15,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::get('/messages/{message}/translate', [MessageController::class, 'translate'])->name('messages.translate');
+Route::get('/bots/{bot}/messages', [BotController::class, 'messages'])
+    ->name('bots.messages.index');
 Route::post('/bots/{bot}/messages', [BotController::class, 'sendMessage'])
     ->name('bots.messages.send')
     ->middleware('can:send-message,bot');
+Route::get('/channels/{channel}/messages', [ChannelController::class, 'messages'])
+    ->name('channels.messages.index');
 Route::post('/channels/{channel}/messages', [ChannelController::class, 'sendMessage'])
     ->name('channels.messages.send')
     ->middleware('can:send-message,channel');

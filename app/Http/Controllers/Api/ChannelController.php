@@ -79,6 +79,11 @@ class ChannelController extends Controller implements HasMiddleware
         return $channel->load('users');
     }
 
+    public function messages(Channel $channel)
+    {
+        return $channel->messages()->with('sender')->latest()->get();
+    }
+
     public function sendMessage(Request $request, Channel $channel)
     {
         $authUser = $request->user();

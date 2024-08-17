@@ -44,6 +44,17 @@ const saveTranslate = () => {
         .put(`/api/users/translate`, {
             translate: translate.value,
         })
+        .then(() => {
+            getMessages();
+        });
+}
+
+const getMessages = () => {
+    axios
+        .get(`/api/bots/${props.bot.handle}/messages`)
+        .then((response) => {
+            messages.value = response.data;
+        });
 }
 
 onMounted(() => {
