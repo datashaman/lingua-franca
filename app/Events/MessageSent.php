@@ -16,14 +16,28 @@ class MessageSent implements ShouldBroadcast
     use SerializesModels;
 
     public function __construct(
-        public Message $message
-    ) {}
+        public Message $message,
+        public bool $translate = false,
+        public string $locale = 'en'
+    ) {
+    }
+
 
     public function broadcastOn(): array
     {
         return [
             new PrivateChannel($this->message->sender->broadcastChannel()),
             new PrivateChannel($this->message->receiver->broadcastChannel()),
+        ];
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'message' => $this->message->toArray(
+                $this->translate,
+                $this->locale
+            ),
         ];
     }
 }

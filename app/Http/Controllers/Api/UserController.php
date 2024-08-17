@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -67,5 +68,31 @@ class UserController extends Controller implements HasMiddleware
         $authUser->save();
 
         return response()->noContent();
+    }
+
+    public function sendMessage(Request $request, User $user)
+    {
+        $authUser = $request->user();
+
+        $message = $user->receivedMessages()->make([
+            'content' => $request->content,
+        ]);
+
+        $message->sender()->associate($authUser);
+        $message->save();
+
+        MessageSent::dispatch($message, $authUser->translate, $authUser->locale);
+
+        return response()->noContent();
+    }
+
+    public function messages(Request $request, User $user)
+    {
+        $authUser = $request->user();
+
+        return Message::query()
+            ->between($authUser, $user)
+            ->oldest()
+            ->get();
     }
 }

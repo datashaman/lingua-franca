@@ -83,7 +83,7 @@ class BotController extends Controller
         $message->sender()->associate($authUser);
         $message->save();
 
-        MessageSent::dispatch($message);
+        MessageSent::dispatch($message, $authUser->translate, $authUser->locale);
 
         return response()->noContent();
     }

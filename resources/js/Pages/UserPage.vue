@@ -12,25 +12,39 @@ const props = defineProps({
 
 const messages = ref(props.messages);
 const newMessage = ref('');
+const translate = ref(page.props.auth.user.translate);
 
 const sendMessage = () => {
-    axios.post(`/api/users/${props.user.slug}/messages`, {
+    axios.post(`/api/users/${props.user.handle}/messages`, {
         content: newMessage.value,
     });
     newMessage.value = '';
 }
 
-const fetchMessages = () => {
-    axios.get(`/api/users/${props.user.slug}/messages`)
-        .then(response => {
+const saveTranslate = () => {
+    axios
+        .put(`/api/users/translate`, {
+            translate: translate.value,
+        })
+        .then(() => {
+            getMessages();
+        });
+}
+
+const getMessages = () => {
+    axios
+        .get(`/api/users/${props.user.handle}/messages`)
+        .then((response) => {
             messages.value = response.data;
         });
 }
 
-Echo.private(`App.Models.User.${props.user.id}`)
-    .listen('MessageSent', (event) => {
-        messages.value.push(event.message);
-    });
+onMounted(() => {
+    Echo.private(`App.Models.User.${page.props.auth.user.id}`)
+        .listen('MessageSent', (event) => {
+            messages.value.push(event.message);
+        });
+});
 </script>
 
 <template>
@@ -40,6 +54,12 @@ Echo.private(`App.Models.User.${props.user.id}`)
             <div class="card-body">
                 <div class="card-title">
                     <div>Messages</div>
+                    <div class="form-control">
+                        <label class="label cursor-pointer">
+                            <span class="label-text">Translate</span>
+                            <input type="checkbox" class="ms-2 toggle" v-model="translate" @change="saveTranslate" />
+                        </label>
+                    </div>
                 </div>
                 <div v-for="message in messages" :key="message.id">
                     <div v-if="message.sender.type === 'user' && message.sender.id === page.props.auth.user.id" class="chat chat-end">
@@ -65,24 +85,5 @@ Echo.private(`App.Models.User.${props.user.id}`)
                 </div>
             </div>
         </div>
-        <ul class="menu bg-base-200 rounded-box">
-            <ul>
-                <li v-for="member in members" :key="member.handle" class="flex flex-row">
-                    <div class="flex-grow">{{ member.handle }}</div>
-                    <div><div class="badge badge-accent">{{ member.locale }}</div></div>
-                    <div class="text-green-500">&#9679;</div>
-                </li>
-            </ul>
-        </ul>
     </div>
-    <dialog id="new_member" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold">New Member</h3>
-            <div class="modal-action">
-                <form method="dialog">
-                    <button class="btn">Close</button>
-                </form>
-            </div>
-        </div>
-    </dialog>
 </template>

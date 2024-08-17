@@ -16,6 +16,7 @@ const props = defineProps({
 const members = ref(props.members);
 const messages = ref(props.messages);
 const newMessage = ref('');
+const translate = ref(page.props.auth.user.translate);
 
 const sendMessage = () => {
     axios.post(`/api/channels/${props.channel.slug}/messages`, {
@@ -24,27 +25,40 @@ const sendMessage = () => {
     newMessage.value = '';
 }
 
-const fetchMessages = () => {
-    axios.get(`/api/channels/${props.channel.slug}/messages`)
-        .then(response => {
-            messages.value = response.data;
-        });
-}
-
-const fetchMembers = () => {
+const getMembers = () => {
     axios.get(`/api/channels/${props.channel.slug}/members`)
         .then(response => {
             members.value = response.data;
         });
 }
 
+const saveTranslate = () => {
+    axios
+        .put(`/api/users/translate`, {
+            translate: translate.value,
+        })
+        .then(() => {
+            getMessages();
+        });
+}
+
+const getMessages = () => {
+    axios
+        .get(`/api/channels/${props.channel.slug}/messages`)
+        .then((response) => {
+            messages.value = response.data;
+        });
+}
+
 const newMember = () => {
 }
 
-Echo.private(`App.Models.Channel.${props.channel.id}`)
-    .listen('MessageSent', (event) => {
-        messages.value.push(event.message);
-    });
+onMounted(() => {
+    Echo.private(`App.Models.Channel.${props.channel.id}`)
+        .listen('MessageSent', (event) => {
+            messages.value.push(event.message);
+        });
+});
 </script>
 
 <template>
@@ -55,6 +69,12 @@ Echo.private(`App.Models.Channel.${props.channel.id}`)
             <div class="card-body">
                 <div class="card-title">
                     <div>Messages</div>
+                    <div class="form-control">
+                        <label class="label cursor-pointer">
+                            <span class="label-text">Translate</span>
+                            <input type="checkbox" class="ms-2 toggle" v-model="translate" @change="saveTranslate" />
+                        </label>
+                    </div>
                 </div>
                 <div v-for="message in messages" :key="message.id">
                     <div v-if="message.sender.type === 'user' && message.sender.id === page.props.auth.user.id" class="chat chat-end">

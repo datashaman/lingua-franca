@@ -42,12 +42,20 @@ class Message extends Model
         return $this->hasMany(MessageTranslation::class);
     }
 
-    public function toArray(): array
+    public function toArray(
+        null|bool $translate = null,
+        null|string $locale = null
+    ): array
     {
+        $authUser = auth()->user();
+
+        $translate ??= $authUser?->translate ?? false;
+        $locale ??= $authUser?->locale ?? 'en';
+
         return [
             'id' => $this->id,
-            'content' => auth()->user()?->translate
-                ? $this->translate(auth()->user()->locale)
+            'content' => $translate
+                ? $this->translate($locale)
                 : $this->content,
             'sender' => $this->getFields($this->sender),
             'receiver' => $this->getFields($this->receiver),

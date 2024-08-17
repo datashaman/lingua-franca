@@ -21,7 +21,9 @@ class GenerateBotResponseJob implements ShouldQueue
 
     public function __construct(
         protected Bot $bot,
-        protected Message $message
+        protected Message $message,
+        protected bool $translate = false,
+        protected string $locale = 'en',
     ) {}
 
     public function handle(Client $openai): void
@@ -92,6 +94,6 @@ class GenerateBotResponseJob implements ShouldQueue
             'content' => $content,
         ]);
 
-        MessageSent::dispatch($message);
+        MessageSent::dispatch($message, $this->translate, $this->locale);
     }
 }

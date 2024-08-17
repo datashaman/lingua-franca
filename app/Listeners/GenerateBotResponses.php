@@ -11,7 +11,12 @@ class GenerateBotResponses
     public function handle(MessageSent $event): void
     {
         if ($event->message->isToBot()) {
-            GenerateBotResponseJob::dispatch($event->message->receiver, $event->message);
+            GenerateBotResponseJob::dispatch(
+                $event->message->receiver,
+                $event->message,
+                $event->translate,
+                $event->locale,
+            );
         } elseif ($event->message->isToChannel() && $event->message->receiver->members->isNotEmpty()) {
             $event->message->receiver->members->each(function ($member) use ($event) {
                 if ($member instanceof Bot) {
@@ -19,7 +24,12 @@ class GenerateBotResponses
                         'bot' => $member->name,
                         'message' => $event->message->content,
                     ]);
-                    GenerateBotResponseJob::dispatch($member, $event->message);
+                    GenerateBotResponseJob::dispatch(
+                        $member,
+                        $event->message,
+                        $event->translate,
+                        $event->locale,
+                    );
                 }
             });
         }

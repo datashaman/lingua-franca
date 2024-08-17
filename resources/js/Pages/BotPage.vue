@@ -60,21 +60,7 @@ const getMessages = () => {
 onMounted(() => {
     Echo.private(`App.Models.User.${page.props.auth.user.id}`)
         .listen('MessageSent', (event) => {
-            if (translate.value && event.message.sender.handle !== page.props.auth.user.handle) {
-                axios
-                    .get(`/api/messages/${event.message.id}/translate`, {
-                        content: event.message.content,
-                        locale: page.props.auth.user.locale,
-                    })
-                    .then((response) => {
-                        messages.value.push({
-                            ...event.message,
-                            content: response.data.content,
-                        });
-                    });
-            } else {
-                messages.value.push(event.message);
-            }
+            messages.value.push(event.message);
         });
 });
 </script>

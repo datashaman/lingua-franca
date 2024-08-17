@@ -10,7 +10,7 @@ dev:
 	yarn dev
 
 reverb:
-	php artisan reverb:start
+	php artisan reverb:start --debug
 
 worker:
 	php artisan queue:work

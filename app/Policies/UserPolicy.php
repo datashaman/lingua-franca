@@ -33,4 +33,9 @@ class UserPolicy extends Policy
     {
         return $user->id === $model->id;
     }
+
+    public function sendMessage(User $user, User $model): bool
+    {
+        return true;
+    }
 }
