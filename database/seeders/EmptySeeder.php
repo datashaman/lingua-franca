@@ -17,7 +17,7 @@ class EmptySeeder extends Seeder
     public function run(): void
     {
 
-        $user = User::factory()->create([
+        $user = User::create([
             'email' => 'marlinf@datashaman.com',
             'is_admin' => true,
             'handle' => 'datashaman',
@@ -44,18 +44,6 @@ class EmptySeeder extends Seeder
                 'instructions' => "Just talk to me in {$localeName}. Do not answer in any other language. I will not understand you.",
                 'locale' => $locale,
             ]);
-
-            $bot->joinChannel($random);
         }
-
-        $otherUser = User::factory()->create([
-            'email' => 'other@example.com',
-            'handle' => 'other',
-            'locale' => 'de',
-            'name' => 'Other User',
-            'password' => Hash::make('password'),
-        ]);
-
-        $user->joinChannel($random);
     }
 }
