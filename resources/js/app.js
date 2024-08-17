@@ -13,11 +13,11 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => {
-        const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
-        let page = pages[`./Pages/${name}.vue`]
-        page.default.layout = page.default.layout || AppLayout
-        return page
+    resolve: async (name) => {
+        const pages = import.meta.glob('./Pages/**/*.vue');
+        let page = await pages[`./Pages/${name}.vue`]();
+        page.default.layout = AppLayout;
+        return page;
     },
     setup({ el, App, props, plugin }) {
         return createApp({ render: () => h(App, props) })
