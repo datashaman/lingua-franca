@@ -13,11 +13,16 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->morphs('sender');
+            $table->string('sender_type')->nullable();
+            $table->unsignedBigInteger('sender_id')->nullable();
             $table->string('receiver_type')->nullable();
             $table->unsignedBigInteger('receiver_id')->nullable();
             $table->text('content');
+            $table->string('locale')->default('en');
             $table->timestamps();
+
+            $table->index(['sender_type', 'sender_id']);
+            $table->index(['receiver_type', 'receiver_id']);
         });
     }
 

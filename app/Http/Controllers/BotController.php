@@ -11,14 +11,22 @@ class BotController extends Controller
 {
     public function __invoke(Request $request, Bot $bot)
     {
+        $authUser = $request->user();
+
+        if (!$authUser) {
+            return Inertia::render('Guest/BotPage', [
+                'bot' => $bot,
+            ]);
+        }
+
+        $messages = Message::query()
+            ->between($authUser, $bot)
+            ->oldest()
+            ->get();
+
         return Inertia::render('BotPage', [
             'bot' => $bot,
-            'messages' => $request->user()
-                ? Message::query()
-                    ->between($request->user(), $bot)
-                    ->oldest()
-                    ->get()
-                : [],
+            'messages' => $messages,
         ]);
     }
 }

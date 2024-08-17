@@ -42,16 +42,16 @@ class HandleInertiaRequests extends Middleware
 
                 'permissions' => [
                     'bots' => [
-                        'create' => $authUser?->can('create', Bot::class),
-                        'view-any' => $authUser?->can('view-any', Bot::class),
+                        'create' => $authUser?->can('create', Bot::class) ?? false,
+                        'view-any' => $authUser?->can('view-any', Bot::class) ?? true,
                     ],
                     'channels' => [
-                        'create' => $authUser?->can('create', Channel::class),
-                        'view-any' => $authUser?->can('view-any', Channel::class),
+                        'create' => $authUser?->can('create', Channel::class) ?? false,
+                        'view-any' => $authUser?->can('view-any', Channel::class) ?? true,
                     ],
                     'users' => [
-                        'create' => $authUser?->can('create', User::class),
-                        'view-any' => $authUser?->can('view-any', User::class),
+                        'create' => $authUser?->can('create', User::class) ?? false,
+                        'view-any' => $authUser?->can('view-any', User::class) ?? true,
                     ],
                 ],
             ],

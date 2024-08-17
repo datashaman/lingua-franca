@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
@@ -20,7 +19,9 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 </script>
 
 <template>
-    <AppLayout constrain title="Email Verification">
+    <Head title="Email Verification" />
+
+    <div class="w-1/4">
         <div class="mb-4 text-sm text-gray-600">
             Thanks for signing up! Before getting started, could you verify your email address by clicking on the link
             we just emailed to you? If you didn't receive the email, we will gladly send you another.
@@ -45,5 +46,5 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
                 >
             </div>
         </form>
-    </AppLayout>
+    </div>
 </template>

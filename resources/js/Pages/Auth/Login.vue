@@ -1,6 +1,5 @@
 <script setup>
 import Checkbox from '@/Components/Checkbox.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -30,7 +29,9 @@ const submit = () => {
 </script>
 
 <template>
-    <AppLayout constrain title="Log in">
+    <Head title="Login"/>
+
+    <div class="w-1/4">
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
         </div>
@@ -88,5 +89,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </AppLayout>
+    </div>
 </template>

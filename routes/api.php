@@ -2,16 +2,19 @@
 
 use App\Http\Controllers\Api\BotController;
 use App\Http\Controllers\Api\ChannelController;
+use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/user', function (Request $request) {
+    Route::get('/users/me', function (Request $request) {
         return $request->user();
     });
+    Route::put('/users/translate', [UserController::class, 'translate'])->name('users.translate');
 });
 
+Route::get('/messages/{message}/translate', [MessageController::class, 'translate'])->name('messages.translate');
 Route::post('/bots/{bot}/messages', [BotController::class, 'sendMessage'])
     ->name('bots.messages.send')
     ->middleware('can:send-message,bot');

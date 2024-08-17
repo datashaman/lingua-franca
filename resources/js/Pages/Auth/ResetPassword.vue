@@ -1,5 +1,4 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -32,7 +31,9 @@ const submit = () => {
 </script>
 
 <template>
-    <AppLayout constrain title="Reset Password">
+    <Head title="Reset Password" />
+
+    <div class="w-1/4">
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
@@ -86,5 +87,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </AppLayout>
+    </div>
 </template>

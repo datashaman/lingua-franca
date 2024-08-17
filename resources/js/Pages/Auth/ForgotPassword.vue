@@ -1,5 +1,4 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -22,7 +21,8 @@ const submit = () => {
 </script>
 
 <template>
-    <AppLayout constrain title="Forgot Password">
+    <Head title="Forgot Password" />
+    <div class="w-1/4">
         <div class="mb-4 text-sm text-gray-600">
             Forgot your password? No problem. Just let us know your email address and we will email you a password reset
             link that will allow you to choose a new one.
@@ -55,5 +55,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </AppLayout>
+    </div>
 </template>

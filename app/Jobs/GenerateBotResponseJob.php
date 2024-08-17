@@ -48,29 +48,37 @@ class GenerateBotResponseJob implements ShouldQueue
                 ->get(),
         };
 
-        if ($messages->isEmpty()) {
-            return;
-        }
-
         $lastMessage = $messages->last();
 
         if (
-            $lastMessage->sender_id === $this->bot->id
-            && $lastMessage->sender_type === $this->bot->getMorphClass()
+            $lastMessage
+            && $lastMessage->sender_type !== 'user'
         ) {
             return;
         }
 
+        $messages = $messages->map(fn (Message $message) => [
+            'role' => ($message->sender_id === $this->bot->id && $message->sender_type === $this->bot->getMorphClass())
+                ? 'assistant'
+                : 'user',
+            'content' => $message->content,
+        ]);
+
+        $messages->prepend([
+            'role' => 'system',
+            'content' => $this->bot->instructions,
+        ]);
+
+        if ($messages->count() === 1) {
+            $messages->prepend([
+                'role' => 'system',
+                'content' => "Please say 'Hello' in your language to start the conversation.",
+            ]);
+        }
+
         $response = $openai->chat()->create([
             'model' => 'gpt-4o-mini',
-            'messages' => $messages
-                ->map(fn (Message $message) => [
-                    'role' => ($message->sender_id === $this->bot->id && $message->sender_type === $this->bot->getMorphClass())
-                        ? 'assistant'
-                        : 'user',
-                    'content' => $message->content,
-                ])
-                ->all(),
+            'messages' => $messages->all(),
         ]);
 
         $content = $response->choices[0]->message->content;

@@ -1,5 +1,4 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -18,7 +17,9 @@ const submit = () => {
 </script>
 
 <template>
-    <AppLayout constrain title="Confirm Password">
+    <Head title="Confirm Password" />
+
+    <div class="w-1/4">
         <div class="mb-4 text-sm text-gray-600">
             This is a secure area of the application. Please confirm your password before continuing.
         </div>
@@ -44,5 +45,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </AppLayout>
+    </div>
 </template>

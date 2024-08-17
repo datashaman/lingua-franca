@@ -21,9 +21,8 @@ class MessageSent implements ShouldBroadcast
 
     public function broadcastOn(): array
     {
-        logger()->info('Broadcasting message to ' . $this->message->receiver->broadcastChannel());
-
         return [
+            new PrivateChannel($this->message->sender->broadcastChannel()),
             new PrivateChannel($this->message->receiver->broadcastChannel()),
         ];
     }

@@ -66,12 +66,10 @@ class BotController extends Controller
         $authUser = $request->user();
 
         $message = $bot->receivedMessages()->make([
-            'content' => $request->input('content'),
+            'content' => $request->content,
         ]);
 
-        $message->sender_type = $authUser->getMorphClass();
-        $message->sender_id = $authUser->getKey();
-
+        $message->sender()->associate($authUser);
         $message->save();
 
         MessageSent::dispatch($message);

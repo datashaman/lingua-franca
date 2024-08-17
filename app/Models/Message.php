@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Datashaman\LaravelTranslators\Facades\Translator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use OpenAI\Client;
 
 class Message extends Model
 {
@@ -34,11 +37,18 @@ class Message extends Model
         return $this->morphTo();
     }
 
+    public function messageTranslations(): HasMany
+    {
+        return $this->hasMany(MessageTranslation::class);
+    }
+
     public function toArray(): array
     {
         return [
             'id' => $this->id,
-            'content' => $this->content,
+            'content' => auth()->user()?->translate
+                ? $this->translate(auth()->user()->locale)
+                : $this->content,
             'sender' => $this->getFields($this->sender),
             'receiver' => $this->getFields($this->receiver),
             'created_at' => $this->created_at,
@@ -90,6 +100,43 @@ class Message extends Model
                             ->where('receiver_type', $sender->getMorphClass())
                     )
             );
+    }
+
+    public function translate(string $locale): string
+    {
+        $translation = $this
+            ->messageTranslations()
+            ->where('locale', $locale)
+            ->first();
+
+        if ($translation) {
+            return $translation->content;
+        }
+
+        $content = $this->createTranslation($locale);
+
+        return $this->saveTranslation($locale, $content);
+    }
+
+    protected function createTranslation(string $locale): string
+    {
+        return Translator::translate([$this->content], $locale)[0];
+    }
+
+    public function saveTranslation(string $locale, string $content): string
+    {
+        if ($this->id) {
+            $translation = MessageTranslation::firstOrCreate([
+                'message_id' => $this->id,
+                'locale' => $locale,
+            ], [
+                'content' => $content,
+            ]);
+
+            return $translation->content;
+        }
+
+        return $content;
     }
 
     protected function getFields(Model $model): array

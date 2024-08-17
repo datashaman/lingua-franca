@@ -24,9 +24,11 @@ class User extends Authenticatable
     protected $fillable = [
         'email',
         'handle',
+        'is_public',
         'locale',
         'name',
         'password',
+        'translate',
     ];
 
     /**
@@ -51,6 +53,7 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
             'is_public' => 'boolean',
             'password' => 'hashed',
+            'translate' => 'boolean',
         ];
     }
 

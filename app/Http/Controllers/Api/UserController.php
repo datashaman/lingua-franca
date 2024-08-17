@@ -59,4 +59,13 @@ class UserController extends Controller implements HasMiddleware
 
         return response()->noContent();
     }
+
+    public function translate(Request $request)
+    {
+        $authUser = $request->user();
+        $authUser->translate = $request->boolean('translate');
+        $authUser->save();
+
+        return response()->noContent();
+    }
 }
