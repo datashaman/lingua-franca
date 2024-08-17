@@ -11,12 +11,13 @@
         "google/cloud-translate": "^1.18",
         "guzzlehttp/guzzle": "^7.9",
         "inertiajs/inertia-laravel": "^1.0",
+        "laravel-lang/common": "^6.4",
         "laravel/framework": "^11.9",
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "laravel-lang/common": "^6.4",
         "openai-php/client": "dev-main",
+        "sentry/sentry-laravel": "^4.8",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
