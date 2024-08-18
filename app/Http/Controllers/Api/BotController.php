@@ -8,6 +8,7 @@ use App\Http\Requests\StoreBotRequest;
 use App\Http\Requests\UpdateBotRequest;
 use App\Models\Bot;
 use App\Models\Message;
+use Datashaman\LaravelTranslators\Facades\Translator;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -66,10 +67,18 @@ class BotController extends Controller
     {
         $authUser = $request->user();
 
-        return Message::query()
+        $messages = Message::query()
+            ->with('messageTranslations', fn ($query) => $query->where('locale', $authUser->locale))
             ->between($authUser, $bot)
-            ->oldest()
             ->get();
+
+        if (!$authUser->translate) {
+            return $messages;
+        }
+
+        Message::translateMany($messages, $authUser->locale);
+
+        return $messages;
     }
 
     public function sendMessage(Request $request, Bot $bot)

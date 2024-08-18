@@ -16,7 +16,6 @@ class UserController extends Controller
             'messages' => $request->user()
                 ? Message::query()
                     ->between($request->user(), $user)
-                    ->oldest()
                     ->get()
                 : [],
         ]);

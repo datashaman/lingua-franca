@@ -40,24 +40,18 @@ class GenerateBotResponseJob implements ShouldQueue
 
     protected function generateResponseTo(Client $openai, User|Bot|Channel $receiver): void
     {
+        if ($this->message->isFromBot()) {
+            return;
+        }
+
         $receiverType = $receiver->getMorphClass();
 
         $messages = match ($receiverType) {
             'channel' => $receiver->messages,
             'bot', 'user' => Message::query()
                 ->between($this->bot, $receiver)
-                ->oldest()
                 ->get(),
         };
-
-        $lastMessage = $messages->last();
-
-        if (
-            $lastMessage
-            && $lastMessage->sender_type !== 'user'
-        ) {
-            return;
-        }
 
         $messages = $messages->map(fn (Message $message) => [
             'role' => ($message->sender_id === $this->bot->id && $message->sender_type === $this->bot->getMorphClass())

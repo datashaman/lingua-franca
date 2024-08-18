@@ -21,7 +21,6 @@ class BotController extends Controller
 
         $messages = Message::query()
             ->between($authUser, $bot)
-            ->oldest()
             ->get();
 
         return Inertia::render('BotPage', [

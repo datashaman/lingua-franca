@@ -92,7 +92,6 @@ class UserController extends Controller implements HasMiddleware
 
         return Message::query()
             ->between($authUser, $user)
-            ->oldest()
             ->get();
     }
 }

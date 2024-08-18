@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use OpenAI\Client;
 
 class Message extends Model
@@ -26,6 +28,38 @@ class Message extends Model
         'receiver',
         'sender',
     ];
+
+    public static function translateMany(
+        Collection $messages,
+        string $locale
+    ): void {
+        [$translated, $untranslated] = $messages->partition(
+            fn ($message) => $message->messageTranslations->where('locale', $locale)->isNotEmpty()
+        );
+
+        if ($untranslated->isEmpty()) {
+            return;
+        }
+
+        $translations = Translator::translate(
+            $untranslated->pluck('content')->toArray(),
+            $locale
+        );
+
+        $untranslated
+            ->each(
+                function ($message, $index) use ($locale, $translations) {
+                    if (!Arr::has($translations, $index)) {
+                        return;
+                    }
+
+                    $message->messageTranslations()->create([
+                        'locale' => $locale,
+                        'content' => $translations[$index],
+                    ]);
+                }
+            );
+    }
 
     public function sender(): MorphTo
     {

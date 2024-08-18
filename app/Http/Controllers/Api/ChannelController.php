@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
 use App\Models\Channel;
+use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -81,7 +82,17 @@ class ChannelController extends Controller implements HasMiddleware
 
     public function messages(Channel $channel)
     {
-        return $channel->messages()->with('sender')->latest()->get();
+        $authUser = request()->user();
+
+        $messages = $channel
+            ->messages()
+            ->with('sender')
+            ->with('messageTranslations', fn ($query) => $query->where('locale', $authUser->locale))
+            ->get();
+
+        Message::translateMany($messages, $authUser->locale);
+
+        return $messages;
     }
 
     public function sendMessage(Request $request, Channel $channel)
