@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Enums\ConversationType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Channel>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Conversation>
  */
-class ChannelFactory extends Factory
+class ConversationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -22,9 +23,9 @@ class ChannelFactory extends Factory
         return [
             'description' => fake()->sentence(),
             'color' => fake()->hexColor(),
-            'is_public' => fake()->boolean(),
             'name' => $name,
             'slug' => Str::slug($name),
+            'type' => fake()->randomElement(ConversationType::class),
         ];
     }
 }

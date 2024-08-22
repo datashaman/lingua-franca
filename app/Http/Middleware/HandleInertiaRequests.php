@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Bot;
-use App\Models\Channel;
+use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -45,9 +45,9 @@ class HandleInertiaRequests extends Middleware
                         'create' => $authUser?->can('create', Bot::class) ?? false,
                         'view-any' => $authUser?->can('view-any', Bot::class) ?? true,
                     ],
-                    'channels' => [
-                        'create' => $authUser?->can('create', Channel::class) ?? false,
-                        'view-any' => $authUser?->can('view-any', Channel::class) ?? true,
+                    'conversations' => [
+                        'create' => $authUser?->can('create', Conversation::class) ?? false,
+                        'view-any' => $authUser?->can('view-any', Conversation::class) ?? true,
                     ],
                     'users' => [
                         'create' => $authUser?->can('create', User::class) ?? false,

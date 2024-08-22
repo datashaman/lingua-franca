@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MessageTranslation extends Model
 {
@@ -15,9 +14,4 @@ class MessageTranslation extends Model
         'locale',
         'message_id',
     ];
-
-    public function message(): BelongsTo
-    {
-        return $this->belongsTo(Message::class);
-    }
 }

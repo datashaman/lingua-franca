@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             BotSeeder::class,
-            ChannelSeeder::class,
+            ConversationSeeder::class,
             MembershipSeeder::class,
         ]);
     }

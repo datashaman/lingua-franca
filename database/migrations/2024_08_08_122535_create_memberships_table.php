@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('memberships', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('channel_id')
+            $table->foreignId('conversation_id')
                 ->index()
                 ->constrained()
                 ->cascadeOnDelete()

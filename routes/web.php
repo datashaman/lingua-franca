@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\BotController;
-use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -11,7 +11,7 @@ Route::get('/', HomeController::class)->name('home');
 
 Route::get('/bots/{bot}', BotController::class)->name('bots.show');
 Route::get('/users/{user}', UserController::class)->name('users.show');
-Route::get('/channels/{channel}', ChannelController::class)->name('channels.show');
+Route::get('/conversations/{conversation}', ConversationController::class)->name('conversations.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

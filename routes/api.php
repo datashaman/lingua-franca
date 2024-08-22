@@ -1,8 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\BotController;
-use App\Http\Controllers\Api\ChannelController;
-use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,16 +18,16 @@ Route::get('/bots/{bot}/messages', [BotController::class, 'messages'])
 Route::post('/bots/{bot}/messages', [BotController::class, 'sendMessage'])
     ->name('bots.messages.send')
     ->middleware('can:send-message,bot');
-Route::get('/channels/{channel}/messages', [ChannelController::class, 'messages'])
-    ->name('channels.messages.index');
-Route::post('/channels/{channel}/messages', [ChannelController::class, 'sendMessage'])
-    ->name('channels.messages.send')
-    ->middleware('can:send-message,channel');
+Route::get('/conversations/{conversation}/messages', [ConversationController::class, 'messages'])
+    ->name('conversations.messages.index');
+Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage'])
+    ->name('conversations.messages.send')
+    ->middleware('can:send-message,conversation');
 Route::get('/users/{user}/messages', [UserController::class, 'messages'])
     ->name('users.messages.index');
 Route::post('/users/{user}/messages', [UserController::class, 'sendMessage'])
     ->name('users.messages.send')
     ->middleware('can:send-message,user');
 Route::apiResource('bots', BotController::class);
-Route::apiResource('channels', ChannelController::class);
+Route::apiResource('conversations', ConversationController::class);
 Route::apiResource('users', UserController::class);

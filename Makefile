@@ -1,4 +1,5 @@
-default:
+om:
+	overmind s
 
 db-reset:
 	php artisan migrate:fresh --seed
@@ -11,6 +12,9 @@ dev:
 
 reverb:
 	php artisan reverb:start --debug
+
+logs:
+	tail -f storage/logs/laravel.log | jq
 
 worker:
 	php artisan queue:work

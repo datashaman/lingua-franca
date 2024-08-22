@@ -23,20 +23,6 @@ class Bot extends Model
         'name',
     ];
 
-    public function receivedMessages(): MorphMany
-    {
-        return $this
-            ->morphMany(Message::class, 'receiver')
-            ->oldest();
-    }
-
-    public function sentMessages(): MorphMany
-    {
-        return $this
-            ->morphMany(Message::class, 'sender')
-            ->oldest();
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -49,16 +35,9 @@ class Bot extends Model
             ->latest();
     }
 
-    public function ownedChannels(): MorphMany
+    public function conversations(): HasManyThrough
     {
-        return $this
-            ->morphMany(Channel::class, 'owner')
-            ->orderBy('name');
-    }
-
-    public function joinedChannels(): HasManyThrough
-    {
-        return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
+        return $this->hasManyThrough(Conversation::class, Membership::class, 'member_id', 'id', 'id', 'conversation_id')
             ->where('member_type', 'user')
             ->orderBy('name');
     }
@@ -68,10 +47,10 @@ class Bot extends Model
         return 'handle';
     }
 
-    public function joinChannel(Channel $channel): Membership
+    public function joinConversation(Conversation $conversation): Membership
     {
         return $this->memberships()->create([
-            'channel_id' => $channel->id,
+            'conversation_id' => $conversation->id,
         ]);
     }
 }

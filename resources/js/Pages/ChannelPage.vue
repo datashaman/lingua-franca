@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { ref, onMounted, defineProps } from 'vue';
+import { ref, onMounted } from 'vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
@@ -8,7 +8,7 @@ import DOMPurify from 'dompurify';
 const page = usePage();
 
 const props = defineProps({
-    channel: Object,
+    conversation: Object,
     members: Array,
     messages: Array,
 });
@@ -16,17 +16,17 @@ const props = defineProps({
 const members = ref(props.members);
 const messages = ref(props.messages);
 const newMessage = ref('');
-const translate = ref(page.props.auth.user.translate);
+const translate = ref(page.props.auth.user?.translate ?? false);
 
 const sendMessage = () => {
-    axios.post(`/api/channels/${props.channel.slug}/messages`, {
+    axios.post(`/api/conversations/${props.conversation.slug}/messages`, {
         content: newMessage.value,
     });
     newMessage.value = '';
 }
 
 const getMembers = () => {
-    axios.get(`/api/channels/${props.channel.slug}/members`)
+    axios.get(`/api/conversations/${props.conversation.slug}/members`)
         .then(response => {
             members.value = response.data;
         });
@@ -44,7 +44,7 @@ const saveTranslate = () => {
 
 const getMessages = () => {
     axios
-        .get(`/api/channels/${props.channel.slug}/messages`)
+        .get(`/api/conversations/${props.conversation.slug}/messages`)
         .then((response) => {
             messages.value = response.data;
         });
@@ -53,8 +53,16 @@ const getMessages = () => {
 const newMember = () => {
 }
 
+const getSenderHandle = (message) => {
+    return message.metadata.sender.split(':')[1];
+}
+
+const renderMessageContent = (message) => {
+    return DOMPurify.sanitize(marked(message.content[0].text.value));
+}
+
 onMounted(() => {
-    Echo.private(`App.Models.Channel.${props.channel.id}`)
+    Echo.private(`App.Models.Conversation.${props.conversation.id}`)
         .listen('MessageSent', (event) => {
             messages.value.push(event.message);
         });
@@ -62,7 +70,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head :title="channel.name" />
+    <Head :title="conversation.name" />
 
     <div class="sm:px-6 flex flex-row gap-4">
         <div class="flex-grow card bg-base-100">
@@ -77,20 +85,20 @@ onMounted(() => {
                     </div>
                 </div>
                 <div v-for="message in messages" :key="message.id">
-                    <div v-if="message.sender.type === 'user' && message.sender.id === page.props.auth.user.id" class="chat chat-end">
+                    <div v-if="message.metadata.sender === `user:${page.props.auth.user.handle}`" class="chat chat-end">
                         <div class="chat-header">
-                            {{ message.sender.handle }}
+                            {{ getSenderHandle(message) }}
                         </div>
                         <div class="chat-bubble chat-bubble-primary">
-                            {{ message.content }}
+                            <div v-html="renderMessageContent(message)"></div>
                         </div>
                     </div>
                     <div v-else class="chat chat-start">
                         <div class="chat-header">
-                            {{ message.sender.handle }}
+                            {{ getSenderHandle(message) }}
                         </div>
                         <div class="chat-bubble chat-bubble-accent">
-                            <div v-html="DOMPurify.sanitize(marked(message.content))"></div>
+                            <div v-html="renderMessageContent(message)"></div>
                         </div>
                     </div>
                 </div>

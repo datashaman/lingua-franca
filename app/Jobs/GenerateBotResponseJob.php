@@ -4,8 +4,7 @@ namespace App\Jobs;
 
 use App\Events\MessageSent;
 use App\Models\Bot;
-use App\Models\Channel;
-use App\Models\Message;
+use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,7 +28,7 @@ class GenerateBotResponseJob implements ShouldQueue
     public function handle(Client $openai): void
     {
         switch ($this->message->receiver_type) {
-            case 'channel':
+            case 'conversation':
                 $this->generateResponseTo($openai, $this->message->receiver);
                 break;
             default:
@@ -38,7 +37,7 @@ class GenerateBotResponseJob implements ShouldQueue
         }
     }
 
-    protected function generateResponseTo(Client $openai, User|Bot|Channel $receiver): void
+    protected function generateResponseTo(Client $openai, User|Bot|Conversation $receiver): void
     {
         if ($this->message->isFromBot()) {
             return;

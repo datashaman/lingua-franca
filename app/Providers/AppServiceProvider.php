@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::enforceMorphMap([
             'bot' => 'App\Models\Bot',
-            'channel' => 'App\Models\Channel',
+            'conversation' => 'App\Models\Conversation',
             'user' => 'App\Models\User',
         ]);
     }

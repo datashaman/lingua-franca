@@ -11,13 +11,18 @@ class Membership extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'member_id',
+        'member_type',
+    ];
+
     public function member(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function channel(): BelongsTo
+    public function conversation(): BelongsTo
     {
-        return $this->belongsTo(Channel::class);
+        return $this->belongsTo(Conversation::class);
     }
 }

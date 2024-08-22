@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { ref, onMounted, defineProps } from 'vue';
+import { ref, onMounted } from 'vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
 
 const page = usePage();

@@ -18,9 +18,11 @@
         "laravel/tinker": "^2.9",
         "openai-php/client": "dev-main",
         "sentry/sentry-laravel": "^4.8",
+        "sqids/sqids": "^0.4.1",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
+        "beyondcode/laravel-dump-server": "^2.0",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.1",
         "laravel/pint": "^1.13",

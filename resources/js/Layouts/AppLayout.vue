@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted, defineProps } from 'vue';
+import { ref, onMounted } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import ChannelMenu from '@/Components/ChannelMenu.vue';
+import ConversationMenu from '@/Components/ConversationMenu.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
@@ -66,7 +66,7 @@ const logout = () => {
         <!-- Page Content -->
         <main class="h-full flex flex-row gap-4">
             <div class="py-8">
-                <ChannelMenu />
+                <ConversationMenu />
             </div>
             <div class="flex-grow">
                 <div v-if="props.constrain" class="w-1/3 mx-auto py-8">

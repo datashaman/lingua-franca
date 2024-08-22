@@ -8,7 +8,6 @@ use App\Http\Requests\StoreBotRequest;
 use App\Http\Requests\UpdateBotRequest;
 use App\Models\Bot;
 use App\Models\Message;
-use Datashaman\LaravelTranslators\Facades\Translator;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -72,7 +71,7 @@ class BotController extends Controller
             ->between($authUser, $bot)
             ->get();
 
-        if (!$authUser->translate) {
+        if (! $authUser->translate) {
             return $messages;
         }
 

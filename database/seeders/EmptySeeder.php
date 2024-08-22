@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Channel;
+use App\Models\Conversation;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -28,10 +28,10 @@ class EmptySeeder extends Seeder
         ]);
 
         $this->call([
-            ChannelSeeder::class,
+            ConversationSeeder::class,
         ]);
 
-        $random = Channel::where('slug', 'random')->first();
+        $random = Conversation::where('slug', 'random')->first();
 
         $locales = collect(LocaleNames::get('en'))
             ->filter(fn ($value, $key) => in_array($key, config('testing.locales')));

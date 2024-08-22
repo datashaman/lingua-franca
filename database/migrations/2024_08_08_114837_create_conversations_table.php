@@ -11,17 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('channels', function (Blueprint $table) {
+        Schema::create('conversations', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
+            $table->foreignId('user_id')
+                  ->index()
+                  ->constrained()
+                  ->cascadeOnDelete()
+                  ->cascadeOnUpdate();
+            $table->string('hash')->unique();
+            $table->string('type');
+            $table->string('name')->nullable();
+            $table->string('slug')->unique()->nullable();
             $table->text('description')->nullable();
             $table->string('color')->nullable();
             $table->string('icon')->nullable();
-            $table->boolean('is_public')->default(true);
-            $table->boolean('is_system')->default(false);
             $table->tinyInteger('position')->nullable();
-            $table->morphs('owner');
+            $table->string('thread_id');
+            $table->boolean('is_system')->default(false);
             $table->timestamps();
         });
     }
@@ -31,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('channels');
+        Schema::dropIfExists('conversations');
     }
 };

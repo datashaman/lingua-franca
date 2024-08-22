@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -71,41 +72,17 @@ class User extends Authenticatable
             ->latest();
     }
 
-    public function joinedChannels(): HasManyThrough
+    public function conversations(): HasMany
     {
-        return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
+        return $this->hasMany(Conversation::class)
+            ->orderBy('name');
+    }
+
+    public function joinedConversations(): HasManyThrough
+    {
+        return $this->hasManyThrough(Conversation::class, Membership::class, 'member_id', 'id', 'id', 'conversation_id')
             ->where('member_type', 'user')
             ->orderBy('name');
-    }
-
-    public function ownedChannels(): MorphMany
-    {
-        return $this
-            ->morphMany(Channel::class, 'owner')
-            ->orderBy('name');
-    }
-
-    public function sentMessages(): MorphMany
-    {
-        return $this
-            ->morphMany(Message::class, 'sender')
-            ->latest();
-
-    }
-
-    public function receivedMessages(): MorphMany
-    {
-        return $this
-            ->morphMany(Message::class, 'receiver')
-            ->latest();
-    }
-
-    public function getUnreadChannelMessageCount(Channel $channel)
-    {
-        return $channel
-            ->messages()
-            ->unreadBy($this)
-            ->count();
     }
 
     public function getRouteKeyName()
@@ -113,10 +90,10 @@ class User extends Authenticatable
         return 'handle';
     }
 
-    public function joinChannel(Channel $channel): Membership
+    public function joinConversation(Conversation $conversation): Membership
     {
         return $this->memberships()->create([
-            'channel_id' => $channel->id,
+            'conversation_id' => $conversation->id,
         ]);
     }
 }
