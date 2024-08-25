@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -9,7 +10,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Log Channel
+    | Default Log Conversation
     |--------------------------------------------------------------------------
     |
     | This option defines the default log channel that is utilized to write
@@ -22,7 +23,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Deprecations Log Channel
+    | Deprecations Log Conversation
     |--------------------------------------------------------------------------
     |
     | This option controls the log channel that should be used to log warnings
@@ -38,7 +39,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Log Channels
+    | Log Conversations
     |--------------------------------------------------------------------------
     |
     | Here you may configure the log channels for your application. Laravel
@@ -63,6 +64,19 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
+        ],
+
+        'json' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'formatter' => JsonFormatter::class,
+            'formatter_with' => [
+                'includeStacktraces' => true,
+            ],
+            'handler' => StreamHandler::class,
+            'with' => [
+                'stream' => storage_path('logs/laravel.log'),
+            ],
         ],
 
         'daily' => [

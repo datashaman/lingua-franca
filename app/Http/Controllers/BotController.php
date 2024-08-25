@@ -3,29 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bot;
-use App\Models\Message;
+use App\Services\ConversationService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class BotController extends Controller
 {
-    public function __invoke(Request $request, Bot $bot)
-    {
+    public function __invoke(
+        Request $request,
+        ConversationService $conversationService,
+        Bot $bot
+    ): RedirectResponse {
         $authUser = $request->user();
 
-        if (!$authUser) {
-            return Inertia::render('Guest/BotPage', [
-                'bot' => $bot,
-            ]);
-        }
+        $conversation = $conversationService->getDirectMessageConversation(
+            $bot,
+            $authUser
+        );
 
-        $messages = Message::query()
-            ->between($authUser, $bot)
-            ->get();
-
-        return Inertia::render('BotPage', [
-            'bot' => $bot,
-            'messages' => $messages,
-        ]);
+        return redirect()->route('conversations.show', $conversation);
     }
 }

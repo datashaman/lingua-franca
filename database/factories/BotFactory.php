@@ -23,7 +23,6 @@ class BotFactory extends Factory
             'handle' => fake()->unique()->userName(),
             'description' => fake()->sentence(),
             'instructions' => fake()->paragraph(),
-            'is_public' => fake()->boolean(),
             'locale' => fake()->randomElement($locales),
             'properties' => [],
         ];

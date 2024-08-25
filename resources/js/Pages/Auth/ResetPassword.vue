@@ -1,4 +1,5 @@
 <script setup>
+import AppLayout from '../../Layouts/AppLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -31,61 +32,63 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Reset Password" />
+    <AppLayout>
+        <Head title="Reset Password" />
 
-    <div class="w-1/4">
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+        <div class="w-1/4">
+            <form @submit.prevent="submit">
+                <div>
+                    <InputLabel for="email" value="Email" />
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
+                    <TextInput
+                            id="email"
+                            type="email"
+                            class="mt-1 block w-full"
+                            v-model="form.email"
+                            required
+                            autofocus
+                            autocomplete="username"
+                            />
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <div class="mt-4">
+                    <InputLabel for="password" value="Password" />
 
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
+                    <TextInput
+                            id="password"
+                            type="password"
+                            class="mt-1 block w-full"
+                            v-model="form.password"
+                            required
+                            autocomplete="new-password"
+                            />
 
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
 
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <div class="mt-4">
+                    <InputLabel for="password_confirmation" value="Confirm Password" />
 
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
+                    <TextInput
+                            id="password_confirmation"
+                            type="password"
+                            class="mt-1 block w-full"
+                            v-model="form.password_confirmation"
+                            required
+                            autocomplete="new-password"
+                            />
 
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div>
+                    <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <div class="flex items-center justify-end mt-4">
+                    <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Reset Password
-                </PrimaryButton>
-            </div>
-        </form>
-    </div>
+                    </PrimaryButton>
+                </div>
+            </form>
+        </div>
+    </AppLayout>
 </template>

@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ConversationType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class ChannelSeeder extends Seeder
+class ConversationSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,31 +15,28 @@ class ChannelSeeder extends Seeder
     {
         $position = 0;
 
-        $user = User::where('handle', 'datashaman')->firstOrFail();
+        $user = User::where('handle', 'system')->firstOrFail();
 
-        $user->ownedChannels()->create([
+        $user->ownedConversations()->create([
             'name' => 'Welcome Lounge',
-            'slug' => 'welcome-lounge',
             'description' => 'A place for new members to introduce themselves and get to know the community.',
-            'is_public' => true,
+            'type' => ConversationType::PublicChannel,
             'is_system' => true,
             'position' => $position++,
         ]);
 
-        $user->ownedChannels()->create([
+        $user->ownedConversations()->create([
             'name' => 'Announcements',
-            'slug' => 'announcements',
             'description' => 'Important announcements from the community.',
-            'is_public' => true,
+            'type' => ConversationType::PublicChannel,
             'is_system' => true,
             'position' => $position++,
         ]);
 
-        $user->ownedChannels()->create([
+        $user->ownedConversations()->create([
             'name' => 'Random',
-            'slug' => 'random',
             'description' => 'A place for random discussions.',
-            'is_public' => true,
+            'type' => ConversationType::PublicChannel,
             'is_system' => true,
             'position' => $position++,
         ]);

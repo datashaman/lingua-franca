@@ -2,12 +2,16 @@
 
 namespace App\Events;
 
-use App\Models\Message;
+use App\Models\Bot;
+use App\Models\Conversation;
+use App\Models\User;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use OpenAI\Responses\Threads\Messages\ThreadMessageResponse;
 
 class MessageSent implements ShouldBroadcast
 {
@@ -16,28 +20,23 @@ class MessageSent implements ShouldBroadcast
     use SerializesModels;
 
     public function __construct(
-        public Message $message,
-        public bool $translate = false,
-        public string $locale = 'en'
+        public Bot|User $sender,
+        public Conversation $conversation,
+        public ThreadMessageResponse $message
     ) {
     }
 
-
-    public function broadcastOn(): array
+    public function broadcastOn(): Channel
     {
-        return [
-            new PrivateChannel($this->message->sender->broadcastChannel()),
-            new PrivateChannel($this->message->receiver->broadcastChannel()),
-        ];
+        return new PrivateChannel(
+            "conversations.{$this->conversation->id}.original"
+        );
     }
 
     public function broadcastWith(): array
     {
         return [
-            'message' => $this->message->toArray(
-                $this->translate,
-                $this->locale
-            ),
+            "message" => $this->message->toArray(),
         ];
     }
 }

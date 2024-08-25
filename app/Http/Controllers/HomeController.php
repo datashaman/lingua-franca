@@ -22,9 +22,7 @@ class HomeController extends Controller
             'laravelVersion' => Application::VERSION,
             'phpVersion' => PHP_VERSION,
             'bots' => Bot::orderBy('handle')->get(),
-            'users' => $request->user()
-                ? User::orderBy('handle')->get()
-                : User::where('is_public', true)->orderBy('handle')->get(),
+            'users' => User::orderBy('handle')->get(),
         ]);
     }
 }

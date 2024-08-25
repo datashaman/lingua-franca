@@ -8,19 +8,19 @@ use Illuminate\Auth\Access\Response;
 
 class BotPolicy extends Policy
 {
-    public function viewAny(?User $user): bool
+    public function viewAny(User $user): bool
     {
         return true;
     }
 
-    public function view(?User $user, Bot $bot): bool
+    public function view(User $user, Bot $bot): bool
     {
         return true;
     }
 
-    public function create(?User $user): bool
+    public function create(User $user): bool
     {
-        return (bool) $user;
+        return true;
     }
 
     public function update(User $user, Bot $bot): Response
@@ -35,10 +35,5 @@ class BotPolicy extends Policy
         return $user->id === $bot->user_id
             ? Response::allow()
             : Response::deny('You do not own this bot.');
-    }
-
-    public function sendMessage(User $user, Bot $bot): Response
-    {
-        return true;
     }
 }

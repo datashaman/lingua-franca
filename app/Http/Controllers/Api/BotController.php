@@ -2,98 +2,56 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBotRequest;
 use App\Http\Requests\UpdateBotRequest;
 use App\Models\Bot;
-use App\Models\Message;
-use Datashaman\LaravelTranslators\Facades\Translator;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Collection;
 
 class BotController extends Controller
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:sanctum', only: ['store', 'update', 'destroy']),
-            new Middleware('can:view-any,App\Models\Bot', only: ['index']),
-            new Middleware('can:view,bot', only: ['show']),
-            new Middleware('can:create,App\Models\Bot', only: ['store']),
-            new Middleware('can:update,bot', only: ['update']),
-            new Middleware('can:delete,bot', only: ['destroy']),
-            new Middleware('can:send-message,bot', only: ['sendMessage']),
+            new Middleware(
+                "auth:sanctum",
+                only: ["store", "update", "destroy"]
+            ),
+            new Middleware("can:view-any,App\Models\Bot", only: ["index"]),
+            new Middleware("can:view,bot", only: ["show"]),
+            new Middleware("can:create,App\Models\Bot", only: ["store"]),
+            new Middleware("can:update,bot", only: ["update"]),
+            new Middleware("can:delete,bot", only: ["destroy"]),
+            new Middleware("can:send-message,bot", only: ["sendMessage"]),
         ];
     }
 
-    public function index(Request $request)
+    public function index(Request $request): Collection
     {
-        if ($authUser = $request->user()) {
-            return Bot::orderBy('name')
-                ->get();
-        }
-
-        return Bot::where('is_public', true)
-            ->orderBy('name')
-            ->get();
+        return Bot::query()->orderBy("name")->get();
     }
 
-    public function show(Bot $bot)
+    public function show(Bot $bot): Bot
     {
         return $bot;
     }
 
-    public function store(StoreBotRequest $request)
+    public function store(StoreBotRequest $request): Bot
     {
         return Bot::create($request->validated());
     }
 
-    public function update(UpdateBotRequest $request, Bot $bot)
+    public function update(UpdateBotRequest $request, Bot $bot): Bot
     {
         $bot->update($request->validated());
 
         return $bot;
     }
 
-    public function destroy(Bot $bot)
+    public function destroy(Bot $bot): void
     {
         $bot->delete();
-
-        return response()->noContent();
-    }
-
-    public function messages(Request $request, Bot $bot)
-    {
-        $authUser = $request->user();
-
-        $messages = Message::query()
-            ->with('messageTranslations', fn ($query) => $query->where('locale', $authUser->locale))
-            ->between($authUser, $bot)
-            ->get();
-
-        if (!$authUser->translate) {
-            return $messages;
-        }
-
-        Message::translateMany($messages, $authUser->locale);
-
-        return $messages;
-    }
-
-    public function sendMessage(Request $request, Bot $bot)
-    {
-        $authUser = $request->user();
-
-        $message = $bot->receivedMessages()->make([
-            'content' => $request->content,
-        ]);
-
-        $message->sender()->associate($authUser);
-        $message->save();
-
-        MessageSent::dispatch($message, $authUser->translate, $authUser->locale);
-
-        return response()->noContent();
     }
 }

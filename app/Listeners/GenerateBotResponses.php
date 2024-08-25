@@ -2,36 +2,36 @@
 
 namespace App\Listeners;
 
+use App\Enums\ConversationType;
 use App\Events\MessageSent;
-use App\Jobs\GenerateBotResponseJob;
-use App\Models\Bot;
+use App\Services\BotService;
 
 class GenerateBotResponses
 {
+    public function __construct(
+        protected BotService $botService
+    ) {}
+
     public function handle(MessageSent $event): void
     {
-        if ($event->message->isToBot()) {
-            GenerateBotResponseJob::dispatch(
-                $event->message->receiver,
-                $event->message,
-                $event->translate,
-                $event->locale,
-            );
-        } elseif ($event->message->isToChannel() && $event->message->receiver->members->isNotEmpty()) {
-            $event->message->receiver->members->each(function ($member) use ($event) {
-                if ($member instanceof Bot) {
-                    logger()->info('Bot response generated', [
-                        'bot' => $member->name,
-                        'message' => $event->message->content,
-                    ]);
-                    GenerateBotResponseJob::dispatch(
-                        $member,
-                        $event->message,
-                        $event->translate,
-                        $event->locale,
-                    );
+        switch ($event->conversation->type) {
+            case ConversationType::DirectMessage:
+                if ($event->sender->isBot()) {
+                    break;
                 }
-            });
+
+                $bot = $event->conversation->bots->first();
+
+                if (! $bot) {
+                    break;
+                }
+
+                $this->botService->generateResponse(
+                    $bot,
+                    $event->conversation
+                );
+
+                break;
         }
     }
 }

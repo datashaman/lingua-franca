@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Message;
 use App\Models\User;
+use App\Services\ConversationService;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    public function __invoke(Request $request, User $user)
-    {
-        return Inertia::render('UserPage', [
-            'user' => $user,
-            'messages' => $request->user()
-                ? Message::query()
-                    ->between($request->user(), $user)
-                    ->get()
-                : [],
-        ]);
+    public function __invoke(
+        Request $request,
+        ConversationService $conversationService,
+        User $user
+    ) {
+        $authUser = $request->user();
+
+        $conversation = $conversationService->getDirectMessageConversation(
+            $user,
+            $authUser
+        );
+
+        return redirect()->route('conversations.show', $conversation);
     }
 }

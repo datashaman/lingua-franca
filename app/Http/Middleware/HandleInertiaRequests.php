@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Bot;
-use App\Models\Channel;
+use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -34,6 +34,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $authUser = $request->user();
+        $conversation = $request->route('conversation');
 
         return [
             ...parent::share($request),
@@ -45,9 +46,11 @@ class HandleInertiaRequests extends Middleware
                         'create' => $authUser?->can('create', Bot::class) ?? false,
                         'view-any' => $authUser?->can('view-any', Bot::class) ?? true,
                     ],
-                    'channels' => [
-                        'create' => $authUser?->can('create', Channel::class) ?? false,
-                        'view-any' => $authUser?->can('view-any', Channel::class) ?? true,
+                    'conversations' => [
+                        'create' => $authUser?->can('create', Conversation::class) ?? false,
+                        'join' => $conversation ? $authUser?->can('join', $conversation) : false,
+                        'leave' => $conversation ? $authUser?->can('leave', $conversation) : false,
+                        'view-any' => $authUser?->can('view-any', Conversation::class) ?? true,
                     ],
                     'users' => [
                         'create' => $authUser?->can('create', User::class) ?? false,
@@ -56,7 +59,7 @@ class HandleInertiaRequests extends Middleware
                 ],
             ],
 
-            'locales' => collect(LocaleNames::get($authUser->locale ?? 'en'))
+            'locales' => collect(LocaleNames::get($authUser?->locale ?? 'en'))
                 ->filter(fn ($value, $key) => in_array($key, config('testing.locales'))),
         ];
     }

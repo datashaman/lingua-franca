@@ -4,8 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -24,7 +24,6 @@ class User extends Authenticatable
     protected $fillable = [
         'email',
         'handle',
-        'is_public',
         'locale',
         'name',
         'password',
@@ -36,10 +35,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     /**
      * Get the attributes that should be cast.
@@ -51,72 +47,70 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'is_admin' => 'boolean',
-            'is_public' => 'boolean',
             'password' => 'hashed',
             'translate' => 'boolean',
         ];
     }
 
-    public function bots()
+    public function bots(): HasMany
     {
-        return $this
-            ->hasMany(Bot::class)
+        return $this->hasMany(Bot::class, 'owner_id')->orderBy('name');
+    }
+
+    public function conversations(): MorphToMany
+    {
+        return $this->morphToMany(Conversation::class, 'member')
+            ->withPivot('is_muted', 'is_pinned', 'is_archived')
+            ->orderBy('type')
             ->orderBy('name');
     }
 
-    public function memberships()
+    public function ownedConversations(): HasMany
     {
-        return $this
-            ->morphMany(Membership::class, 'member')
-            ->latest();
-    }
-
-    public function joinedChannels(): HasManyThrough
-    {
-        return $this->hasManyThrough(Channel::class, Membership::class, 'member_id', 'id', 'id', 'channel_id')
-            ->where('member_type', 'user')
+        return $this->hasMany(Conversation::class, 'owner_id')
+            ->orderBy('type')
             ->orderBy('name');
     }
 
-    public function ownedChannels(): MorphMany
+    public function joinConversation(Conversation $conversation)
     {
-        return $this
-            ->morphMany(Channel::class, 'owner')
-            ->orderBy('name');
+        $conversation->users()->attach($this->id, [
+            'is_muted' => false,
+            'is_pinned' => false,
+            'is_archived' => false,
+        ]);
     }
 
-    public function sentMessages(): MorphMany
+    public function leaveConversation(Conversation $conversation)
     {
-        return $this
-            ->morphMany(Message::class, 'sender')
-            ->latest();
-
+        $conversation->users()->detach($this->id);
     }
 
-    public function receivedMessages(): MorphMany
+    public function isMember(Conversation $conversation): bool
     {
-        return $this
-            ->morphMany(Message::class, 'receiver')
-            ->latest();
+        return $conversation
+            ->users()
+            ->where('users.id', $this->id)
+            ->exists();
     }
 
-    public function getUnreadChannelMessageCount(Channel $channel)
+    public function isOwner(Owned $owned): bool
     {
-        return $channel
-            ->messages()
-            ->unreadBy($this)
-            ->count();
+        return $owned->owner_id === $this->id;
+    }
+
+    public function isBot(): bool
+    {
+        return false;
+    }
+
+    public function isUser(): bool
+    {
+        return true;
     }
 
     public function getRouteKeyName()
     {
         return 'handle';
-    }
-
-    public function joinChannel(Channel $channel): Membership
-    {
-        return $this->memberships()->create([
-            'channel_id' => $channel->id,
-        ]);
     }
 }

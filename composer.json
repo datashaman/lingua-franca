@@ -16,11 +16,14 @@
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "openai-php/client": "dev-main",
+        "openai-php/client": "dev-attachments-error",
         "sentry/sentry-laravel": "^4.8",
+        "sqids/sqids": "^0.4.1",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.1",
+        "beyondcode/laravel-dump-server": "^2.0",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.1",
         "laravel/pint": "^1.13",
@@ -33,6 +36,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/datashaman/laravel-translators"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/datashaman/client"
         }
     ],
     "autoload": {
@@ -53,8 +60,11 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan lang:update"
+            "@php artisan lang:update",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

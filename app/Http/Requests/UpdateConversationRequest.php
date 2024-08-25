@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreChannelRequest extends FormRequest
+class UpdateConversationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user->can('create');
+        return $this->user->can('update', $this->conversation);
     }
 
     /**
@@ -24,7 +24,7 @@ class StoreChannelRequest extends FormRequest
         return [
             'description' => ['sometimes', 'string'],
             'is_public' => ['required', 'boolean'],
-            'name' => ['required', 'string', 'max:255', 'unique:channels,name'],
+            'name' => ['required', 'string', 'max:255', "unique:conversations,name,{$this->conversation->id}"],
         ];
     }
 }
