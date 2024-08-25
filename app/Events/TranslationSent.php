@@ -7,6 +7,7 @@ use App\Models\Conversation;
 use App\Models\MessageTranslation;
 use App\Models\User;
 use Datashaman\LaravelTranslators\Facades\Translator;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -26,24 +27,21 @@ class TranslationSent implements ShouldBroadcast
     public function __construct(
         public Conversation $conversation,
         public ThreadMessageResponse $message,
-        public string $locale,
+        public string $locale
     ) {
     }
 
-    public function broadcastAs(): string
+    public function broadcastOn(): Channel
     {
-        return static::class . ".{$this->locale}";
-    }
-
-    public function broadcastOn(): array
-    {
-        return [new PrivateChannel($this->conversation->broadcastChannel())];
+        return new PrivateChannel(
+            "conversations.{$this->conversation->id}.{$this->locale}"
+        );
     }
 
     public function broadcastWith(): array
     {
         return [
-            'message' => $this->message,
+            "message" => $this->message,
         ];
     }
 }

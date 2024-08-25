@@ -7,7 +7,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('App.Models.Conversation.{id}', function ($user, $id) {
+Broadcast::channel('conversations.{id}.*', function ($user, $id) {
     $conversation = Conversation::find($id);
 
     return $user->can('view', $conversation);

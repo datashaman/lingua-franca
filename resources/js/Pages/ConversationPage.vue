@@ -30,10 +30,12 @@ const getPermissions = async () => {
 };
 
 const sendMessage = async () => {
-    axios.post(route("conversations.messages.send", props.conversation), {
-        content: newMessage.value,
-    });
+    const content = newMessage.value;
     newMessage.value = "";
+
+    await axios.post(route("conversations.messages.send", props.conversation), {
+        content,
+    });
 };
 
 const getBots = async () => {
@@ -53,6 +55,7 @@ const getUsers = async () => {
 const saveTranslate = async () => {
     await axios.put(route("users.translate"), { translate: translate.value });
     await getMessages();
+    listenToMessages();
 };
 
 const getMessages = async () => {
@@ -94,28 +97,34 @@ const conversationTitle = computed(() => {
     return props.conversation.name;
 });
 
-const getEventName = () => {
-    return translate.value
-        ? `TranslationSent.${page.props.auth.user.locale}`
-        : "MessageSent";
-};
-
 const listenToMessages = () => {
-    console.log(`Listening to ${eventName.value}`);
+    if (translate.value) {
+        Echo.private(
+            `conversations.${props.conversation.id}.original`,
+        ).stopListeningToAll();
 
-    Echo.private(`App.Models.Conversation.${props.conversation.id}`)
-        .stopListeningToAll()
-        .listen(eventName.value, (event) => {
+        Echo.private(
+            `conversations.${props.conversation.id}.${page.props.auth.user.locale}`,
+        ).listen("TranslationSent", (event) => {
             console.log(event.message);
             messages.value.push(event.message);
         });
-};
 
-const eventName = computed(() => {
-    return translate.value
-        ? `TranslationSent.${page.props.auth.user.locale}`
-        : "MessageSent";
-});
+        return;
+    }
+
+    Echo.private(
+        `conversations.${props.conversation.id}.${page.props.auth.user.locale}`,
+    ).stopListeningToAll();
+
+    Echo.private(`conversations.${props.conversation.id}.original`).listen(
+        "MessageSent",
+        (event) => {
+            console.log(event.message);
+            messages.value.push(event.message);
+        },
+    );
+};
 
 onMounted(async () => {
     listenToMessages();

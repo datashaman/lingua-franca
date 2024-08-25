@@ -23,17 +23,20 @@ class MessageSent implements ShouldBroadcast
         public Bot|User $sender,
         public Conversation $conversation,
         public ThreadMessageResponse $message
-    ) {}
+    ) {
+    }
 
     public function broadcastOn(): Channel
     {
-        return new PrivateChannel($this->conversation->broadcastChannel());
+        return new PrivateChannel(
+            "conversations.{$this->conversation->id}.original"
+        );
     }
 
     public function broadcastWith(): array
     {
         return [
-            'message' => $this->message->toArray(),
+            "message" => $this->message->toArray(),
         ];
     }
 }
