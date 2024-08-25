@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->boolean('is_admin')->default(false);
-            $table->boolean('is_public')->default(false);
             $table->boolean('translate')->default(false);
+            $table->string('locale', 10)->default(config('app.locale'));
             $table->timestamps();
         });
 

@@ -11,14 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('memberships', function (Blueprint $table) {
+        Schema::create('members', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('conversation_id')
+            $table
+                ->foreignId('conversation_id')
                 ->index()
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->morphs('member');
+            $table->boolean('is_muted')->default(false);
+            $table->boolean('is_pinned')->default(false);
+            $table->boolean('is_archived')->default(false);
             $table->timestamps();
         });
     }

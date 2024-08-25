@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Enums\ConversationType;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Conversation>
@@ -24,7 +23,6 @@ class ConversationFactory extends Factory
             'description' => fake()->sentence(),
             'color' => fake()->hexColor(),
             'name' => $name,
-            'slug' => Str::slug($name),
             'type' => fake()->randomElement(ConversationType::class),
         ];
     }

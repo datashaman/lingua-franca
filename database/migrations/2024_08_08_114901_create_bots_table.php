@@ -13,17 +13,20 @@ return new class extends Migration
     {
         Schema::create('bots', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
+            $table
+                ->foreignId('owner_id')
                 ->index()
-                ->constrained()
+                ->constrained('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('name');
             $table->string('handle')->unique();
-            $table->boolean('is_public')->default(false);
+            $table->text('instructions');
             $table->text('description')->nullable();
-            $table->text('instructions')->nullable();
+            $table->string('model')->default(config('services.openai.model'));
+            $table->string('locale', 10)->default(config('app.locale'));
             $table->json('properties')->nullable();
+            $table->string('assistant_id')->nullable();
             $table->timestamps();
         });
     }

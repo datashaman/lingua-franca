@@ -14,7 +14,24 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(Client::class, fn () => OpenAI::client(config('services.openai.api_key')));
+        $this->app->singleton(
+            Client::class,
+            function ($app) {
+                $factory = OpenAI::factory()
+                    ->withApiKey(config('services.openai.api_key'))
+                    ->withHttpHeader('OpenAI-Beta', 'assistants=v2');
+
+                if ($organization = config('services.openai.organization')) {
+                    $factory->withOrganization($organization);
+                }
+
+                if ($project = config('services.openai.project')) {
+                    $factory->withProject($project);
+                }
+
+                return $factory->make();
+            }
+        );
     }
 
     /**

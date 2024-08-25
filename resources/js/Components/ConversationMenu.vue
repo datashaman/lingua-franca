@@ -42,7 +42,7 @@ onMounted(() => {
         <ul class="menu w-80 bg-base-200 rounded-box">
             <ul>
                 <li v-for="conversation in systemConversations" :key="conversation.id">
-                    <Link :href="route('conversations.show', conversation.slug)" :class="{ 'active': $page.url === `/conversations/{conversation.slug}` }">
+                    <Link :href="route('conversations.show', conversation)" :class="{ 'active': $page.url === route('conversations.show', conversation) }">
                         {{ conversation.name }}
                     </Link>
                 </li>
@@ -59,7 +59,7 @@ onMounted(() => {
             </li>
             <ul>
                 <li v-for="conversation in userConversations" :key="conversation.id">
-                    <Link :href="route('conversations.show', conversation.slug)" :class="{ 'active': $page.url === `/conversations/{conversation.slug}` }">
+                    <Link :href="route('conversations.show', conversation)" :class="{ 'active': $page.url === route('conversations.show', conversation) }">
                         {{ conversation.name }}
                     </Link>
                 </li>

@@ -13,21 +13,21 @@ return new class extends Migration
     {
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
-                  ->index()
-                  ->constrained()
-                  ->cascadeOnDelete()
-                  ->cascadeOnUpdate();
-            $table->string('hash')->unique();
+            $table
+                ->foreignId('owner_id')
+                ->index()
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->string('thread_id');
             $table->string('type');
+            $table->string('hash')->unique();
             $table->string('name')->nullable();
-            $table->string('slug')->unique()->nullable();
             $table->text('description')->nullable();
             $table->string('color')->nullable();
             $table->string('icon')->nullable();
-            $table->tinyInteger('position')->nullable();
-            $table->string('thread_id');
             $table->boolean('is_system')->default(false);
+            $table->tinyInteger('position')->nullable();
             $table->timestamps();
         });
     }

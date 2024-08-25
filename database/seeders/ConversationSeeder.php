@@ -15,29 +15,26 @@ class ConversationSeeder extends Seeder
     {
         $position = 0;
 
-        $user = User::where('handle', 'datashaman')->firstOrFail();
+        $user = User::where('handle', 'system')->firstOrFail();
 
-        $user->conversations()->create([
+        $user->ownedConversations()->create([
             'name' => 'Welcome Lounge',
-            'slug' => 'welcome-lounge',
             'description' => 'A place for new members to introduce themselves and get to know the community.',
             'type' => ConversationType::PublicChannel,
             'is_system' => true,
             'position' => $position++,
         ]);
 
-        $user->conversations()->create([
+        $user->ownedConversations()->create([
             'name' => 'Announcements',
-            'slug' => 'announcements',
             'description' => 'Important announcements from the community.',
             'type' => ConversationType::PublicChannel,
             'is_system' => true,
             'position' => $position++,
         ]);
 
-        $user->conversations()->create([
+        $user->ownedConversations()->create([
             'name' => 'Random',
-            'slug' => 'random',
             'description' => 'A place for random discussions.',
             'type' => ConversationType::PublicChannel,
             'is_system' => true,
