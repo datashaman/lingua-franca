@@ -23,9 +23,11 @@ const isMember = ref(props.isMember);
 const permissions = ref({});
 
 const getPermissions = async () => {
-    const response = await axios.get(route('conversations.permissions', props.conversation));
+    const response = await axios.get(
+        route("conversations.permissions", props.conversation),
+    );
     permissions.value = response.data;
-}
+};
 
 const sendMessage = async () => {
     axios.post(route("conversations.messages.send", props.conversation), {
@@ -35,36 +37,44 @@ const sendMessage = async () => {
 };
 
 const getBots = async () => {
-    const response = await axios.get(route("conversations.bots", props.conversation));
+    const response = await axios.get(
+        route("conversations.bots", props.conversation),
+    );
     bots.value = response.data;
 };
 
 const getUsers = async () => {
-    const response = await axios.get(route("conversations.users", props.conversation));
+    const response = await axios.get(
+        route("conversations.users", props.conversation),
+    );
     users.value = response.data;
 };
 
 const saveTranslate = async () => {
-    const response = await axios.put(route("users.translate"), {
-        translate: translate.value,
-    });
+    await axios.put(route("users.translate"), { translate: translate.value });
     await getMessages();
 };
 
 const getMessages = async () => {
-    const response = await axios.get(route("conversations.messages.index", props.conversation));
+    const response = await axios.get(
+        route("conversations.messages.index", props.conversation),
+    );
     messages.value = response.data;
 };
 
 const join = async () => {
-    const response = await axios.post(route("conversations.join", props.conversation));
+    const response = await axios.post(
+        route("conversations.join", props.conversation),
+    );
     isMember.value = true;
     getUsers();
     getPermissions();
 };
 
 const leave = async () => {
-    const response = await axios.post(route("conversations.leave", props.conversation));
+    const response = await axios.post(
+        route("conversations.leave", props.conversation),
+    );
     isMember.value = false;
     getUsers();
     getPermissions();
@@ -73,7 +83,7 @@ const leave = async () => {
 const newMember = () => {};
 
 const getSenderHandle = (message) => {
-    return message.metadata.sender
+    return message.metadata.sender;
 };
 
 const renderMessageContent = (message) => {
@@ -84,19 +94,31 @@ const conversationTitle = computed(() => {
     return props.conversation.name;
 });
 
-onMounted(async () => {
-    const eventName = page.props.auth.user.translate
+const getEventName = () => {
+    return translate.value
         ? `TranslationSent.${page.props.auth.user.locale}`
         : "MessageSent";
+};
 
-    Echo.private(`App.Models.Conversation.${props.conversation.id}`).listen(
-        eventName,
-        (event) => {
+const listenToMessages = () => {
+    console.log(`Listening to ${eventName.value}`);
+
+    Echo.private(`App.Models.Conversation.${props.conversation.id}`)
+        .stopListeningToAll()
+        .listen(eventName.value, (event) => {
             console.log(event.message);
             messages.value.push(event.message);
-        },
-    );
+        });
+};
 
+const eventName = computed(() => {
+    return translate.value
+        ? `TranslationSent.${page.props.auth.user.locale}`
+        : "MessageSent";
+});
+
+onMounted(async () => {
+    listenToMessages();
     await getPermissions();
 });
 </script>
@@ -167,7 +189,11 @@ onMounted(async () => {
                             placeholder="Type a message"
                             class="input input-bordered w-full"
                         />
-                        <button v-if="permissions.join" @click="join" class="btn btn-primary">
+                        <button
+                            v-if="permissions.join"
+                            @click="join"
+                            class="btn btn-primary"
+                        >
                             <PlusIcon class="h-5 w-5" />
                             Join Conversation
                         </button>
