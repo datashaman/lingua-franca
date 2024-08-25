@@ -43,23 +43,23 @@ class HandleInertiaRequests extends Middleware
 
                 'permissions' => [
                     'bots' => [
-                        'create' => $authUser->can('create', Bot::class) ?? false,
-                        'view-any' => $authUser->can('view-any', Bot::class) ?? true,
+                        'create' => $authUser?->can('create', Bot::class) ?? false,
+                        'view-any' => $authUser?->can('view-any', Bot::class) ?? true,
                     ],
                     'conversations' => [
-                        'create' => $authUser->can('create', Conversation::class) ?? false,
-                        'join' => $conversation ? $authUser->can('join', $conversation) : false,
-                        'leave' => $conversation ? $authUser->can('leave', $conversation) : false,
-                        'view-any' => $authUser->can('view-any', Conversation::class) ?? true,
+                        'create' => $authUser?->can('create', Conversation::class) ?? false,
+                        'join' => $conversation ? $authUser?->can('join', $conversation) : false,
+                        'leave' => $conversation ? $authUser?->can('leave', $conversation) : false,
+                        'view-any' => $authUser?->can('view-any', Conversation::class) ?? true,
                     ],
                     'users' => [
-                        'create' => $authUser->can('create', User::class) ?? false,
-                        'view-any' => $authUser->can('view-any', User::class) ?? true,
+                        'create' => $authUser?->can('create', User::class) ?? false,
+                        'view-any' => $authUser?->can('view-any', User::class) ?? true,
                     ],
                 ],
             ],
 
-            'locales' => collect(LocaleNames::get($authUser->locale ?? 'en'))
+            'locales' => collect(LocaleNames::get($authUser?->locale ?? 'en'))
                 ->filter(fn ($value, $key) => in_array($key, config('testing.locales'))),
         ];
     }

@@ -54,8 +54,12 @@ class ConversationController extends Controller implements HasMiddleware
 
         return [
             "create" => $authUser->can("create", Conversation::class),
-            "join" => $conversation ? $authUser->can("join", $conversation) : false,
-            "leave" => $conversation ? $authUser->can("leave", $conversation) : false,
+            "join" => $conversation
+                ? $authUser->can("join", $conversation)
+                : false,
+            "leave" => $conversation
+                ? $authUser->can("leave", $conversation)
+                : false,
             "view-any" => $authUser->can("view-any", Conversation::class),
         ];
     }
@@ -109,10 +113,14 @@ class ConversationController extends Controller implements HasMiddleware
     }
 
     public function messages(
+        Request $request,
         ConversationService $conversationService,
         Conversation $conversation
     ): Collection {
-        return $conversationService->getMessages($conversation);
+        return $conversationService->getMessages(
+            $conversation,
+            $request->user()
+        );
     }
 
     public function sendMessage(

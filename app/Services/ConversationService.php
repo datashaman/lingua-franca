@@ -7,8 +7,11 @@ use App\Enums\MessageRole;
 use App\Events\MessageSent;
 use App\Models\Bot;
 use App\Models\Conversation;
+use App\Models\Translation;
 use App\Models\User;
+use Datashaman\LaravelTranslators\Facades\Translator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use OpenAI\Client;
@@ -21,7 +24,7 @@ class ConversationService
     public function __construct(protected Client $openai)
     {
         $this->systemUser = User::query()
-            ->where('handle', 'system')
+            ->where("handle", "system")
             ->firstOrFail();
     }
 
@@ -32,7 +35,7 @@ class ConversationService
         $members = [$first, $second];
 
         $conversation = Conversation::query()
-            ->where('type', ConversationType::DirectMessage)
+            ->where("type", ConversationType::DirectMessage)
             ->hasMember($first)
             ->hasMember($second)
             ->first();
@@ -42,7 +45,7 @@ class ConversationService
         }
 
         $conversation = $this->systemUser->ownedConversations()->create([
-            'type' => ConversationType::DirectMessage,
+            "type" => ConversationType::DirectMessage,
         ]);
 
         $first->joinConversation($conversation);
@@ -51,18 +54,22 @@ class ConversationService
         return $conversation;
     }
 
-    public function getMessages(Conversation $conversation): Collection
-    {
+    public function getMessages(
+        Conversation $conversation,
+        User $user
+    ): Collection {
+        $cacheExpiresAt = now()->addHours(1);
+
         $cacheKey = "conversation-{$conversation->id}-messages";
         $messages = Cache::get($cacheKey, []);
 
         $params = [
-            'order' => 'asc',
+            "order" => "asc",
         ];
 
         do {
             if ($after = Arr::last($messages)?->id) {
-                $params['after'] = $after;
+                $params["after"] = $after;
             }
 
             $response = $this->openai
@@ -73,9 +80,61 @@ class ConversationService
             $messages = array_merge($messages, $response->data);
         } while ($response->hasMore);
 
-        Cache::put($cacheKey, $messages, now()->addHours(1));
+        Cache::put($cacheKey, $messages, $cacheExpiresAt);
 
-        return collect($messages);
+        $messages = collect($messages);
+
+        if (!$user->translate) {
+            return $messages;
+        }
+
+        $this->translateMessages($messages, $user->locale);
+
+        return $this->getTranslatedMessages($messages, $user->locale);
+    }
+
+    public function getTranslatedMessages(
+        Collection $messages,
+        string $locale
+    ): Collection {
+        return $messages->each(function ($message) use ($locale) {
+            $message->content[0]->text->value = Translation::query()
+                ->where("message_id", $message->id)
+                ->where("locale", $locale)
+                ->value("content");
+        });
+    }
+
+    public function translateMessages(
+        Collection $messages,
+        string $locale
+    ): void {
+        [$translated, $untranslated] = $messages->partition(
+            fn($message) => Translation::query()
+                ->where("message_id", $message->id)
+                ->where("locale", $locale)
+                ->exists()
+        );
+
+        if ($untranslated->isEmpty()) {
+            return;
+        }
+
+        $translations = Translator::translate(
+            $untranslated->pluck("content.0.text.value")->toArray(),
+            $locale
+        );
+
+        $untranslated->each(
+            fn($message, $index) => Translation::query()->create([
+                "message_id" => $message->id,
+                "locale" => $locale,
+                "content" => Translator::translate(
+                    [$message->content[0]->text->value],
+                    $locale
+                )[0],
+            ])
+        );
     }
 
     public function sendMessage(
@@ -87,14 +146,15 @@ class ConversationService
             ->threads()
             ->messages()
             ->create($conversation->thread_id, [
-                'content' => $content,
-                'metadata' => [
-                    'conversation_id' => (string) $conversation->id,
-                    'sender' => "{$sender->getMorphClass()}:{$sender->getRouteKey()}",
+                "content" => $content,
+                "metadata" => [
+                    "conversation_id" => (string) $conversation->id,
+                    "sender" => "{$sender->getMorphClass()}:{$sender->getRouteKey()}",
                 ],
-                'role' => $sender instanceof Bot
-                    ? MessageRole::Assistant
-                    : MessageRole::User,
+                "role" =>
+                    $sender instanceof Bot
+                        ? MessageRole::Assistant
+                        : MessageRole::User,
             ]);
 
         MessageSent::dispatch($sender, $conversation, $message);

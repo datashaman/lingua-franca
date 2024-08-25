@@ -14,16 +14,15 @@ class ConversationController extends Controller
         ConversationService $conversationService,
         Conversation $conversation
     ) {
-        $messages = $conversationService
-            ->getMessages($conversation);
+        $authUser = $request->user();
+        $messages = $conversationService->getMessages($conversation, $authUser);
 
-        $conversation
-            ->load(['bots', 'users']);
+        $conversation->load(["bots", "users"]);
 
-        return Inertia::render('ConversationPage', [
-            'conversation' => $conversation,
-            'messages' => $messages,
-            'isMember' => $request->user()->isMember($conversation),
+        return Inertia::render("ConversationPage", [
+            "conversation" => $conversation,
+            "messages" => $messages,
+            "isMember" => $request->user()->isMember($conversation),
         ]);
     }
 }

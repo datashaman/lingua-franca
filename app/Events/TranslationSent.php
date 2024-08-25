@@ -25,9 +25,14 @@ class TranslationSent implements ShouldBroadcast
 
     public function __construct(
         public Conversation $conversation,
-        public ThreadMessageResponse $message
+        public ThreadMessageResponse $message,
+        public string $locale,
     ) {
-        $this->sender = $this->getSender();
+    }
+
+    public function broadcastAs(): string
+    {
+        return static::class . ".{$this->locale}";
     }
 
     public function broadcastOn(): array
@@ -37,49 +42,8 @@ class TranslationSent implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
-        if (! $this->sender->translate) {
-            return [
-                'message' => $this->message,
-            ];
-        }
-
-        $translation = MessageTranslation::query()
-            ->where('locale', $this->sender->locale)
-            ->where('message_id', $this->message->id)
-            ->first();
-
-        if ($translation) {
-            $this->message->content[0]->text->value = $translation->content;
-            $this->message->metadata['locale'] = $this->sender->locale;
-
-            return [
-                'message' => $message,
-            ];
-        }
-
-        $this->message->content[0]->text->value = Translator::translate(
-            [$this->message->content[0]->text->value],
-            $this->sender->locale
-        )[0];
-
         return [
             'message' => $this->message,
         ];
-    }
-
-    protected function getSender(): User|Bot|Conversation
-    {
-        return $this->getParticipant('sender');
-    }
-
-    protected function getParticipant(
-        string $participant
-    ): User|Bot|Conversation {
-        [$type, $id] = explode(':', $this->message->metadata[$participant]);
-        $class = Relation::getMorphedModel($type);
-
-        $object = new $class;
-
-        return $class::where($object->getRouteKeyName(), $id)->first();
     }
 }

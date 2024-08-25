@@ -85,8 +85,12 @@ const conversationTitle = computed(() => {
 });
 
 onMounted(async () => {
+    const eventName = page.props.auth.user.translate
+        ? `TranslationSent.${page.props.auth.user.locale}`
+        : "MessageSent";
+
     Echo.private(`App.Models.Conversation.${props.conversation.id}`).listen(
-        "MessageSent",
+        eventName,
         (event) => {
             console.log(event.message);
             messages.value.push(event.message);
